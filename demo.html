@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head>
+    <title>paper-tabs</title>
+    
+    <script src="../platform/platform.js"></script>
+    
+    <link rel="import" href="paper-tabs.html">
+    <link rel="import" href="../paper-appbar/paper-appbar.html">
+    <link rel="import" href="../paper-icon-button/paper-icon-button.html">
+    
+    <style shim-shadowdom>
+    
+      html, body {
+        margin: 0;
+      }
+    
+      body {
+        font-family: Roboto2, 'Helvetica Neue', Helvetica, Arial;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+        -webkit-touch-callout: none;
+      }
+      
+      paper-appbar {
+        background-color: #3f51b5;
+        color: #eee;
+      }
+      
+    </style>
+    
+  </head>
+  
+  <body unresolved>
+  
+    <paper-tabs selected="0">
+      <div>ALL</div>
+      <div>CAMERA</div>
+      <div>RECENT</div>
+    </paper-tabs>
+    
+    <br><br><br><br><br>
+    
+    <paper-appbar class="seamed" theme="core-dark-theme">
+      <paper-icon-button icon="left"></paper-icon-button>
+      <div flex>Music</div>
+      <paper-icon-button icon="search"></paper-icon-button>
+    </paper-appbar>
+    
+    <paper-tabs selected="0" class="secondary">
+      <div>ALL</div>
+      <div>CAMERA</div>
+      <div>RECENT</div>
+    </paper-tabs>
+    
+  </body>
+</html>

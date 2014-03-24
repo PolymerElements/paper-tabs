@@ -1,0 +1,81 @@
+<!--
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!--
+`paper-tabs` is a `core-selector` styled to look like tabs. Tabs make it easy to 
+explore and switch between different views or functional aspects of an app, or 
+to browse categorized data sets.
+
+Use `selected` property to get or set the selected tab.
+
+Example:
+
+    <paper-tabs selected="0">
+      <div>TAB 1</div>
+      <div>TAB 2</div>
+      <div>TAB 3</div>
+    </paper-tabs>
+    
+`paper-tabs` will adjust its height when the screen size is smaller than
+the width specified in `responsiveWidth` (default is 480px).
+
+When `paper-tabs` is used as a secondary toolbar (e.g. `paper-tabs` is below 
+`paper-appbar`), the class `secondary` should be assigned to `paper-tabs` so 
+the correct height is used.
+
+Example:
+
+    <paper-appbar class="seamed">
+      ...
+    </paper-appbar>
+    
+    <paper-tabs selected="0" class="secondary">
+      <div>TAB 1</div>
+      <div>TAB 2</div>
+      <div>TAB 3</div>
+    </paper-tabs>
+
+@group Quantum Paper Elements
+@element paper-tabs
+@homepage github.io
+
+-->
+
+<link rel="import" href="../core-selector/core-selector.html">
+<link rel="import" href="../core-layout/core-layout.html">
+<link rel="import" href="../core-media-query/core-media-query.html">
+
+<polymer-element name="paper-tabs" extends="core-selector" attributes="responsiveWidth">
+
+  <template>
+  
+    <link rel="stylesheet" href="paper-tabs.css">
+    <link rel="stylesheet" href="../core-layout/core-layout.css">
+    
+    <core-media-query query="max-width: {{responsiveWidth}}" queryMatches="{{narrowMatches}}"></core-media-query>
+    
+    <div id="tabsContainer" core-flow class="{{ {narrow : narrowMatches} | tokenList }}">
+    
+      <shadow></shadow>
+      
+    </div>
+    
+  </template>
+  
+  <script>
+  
+    Polymer('paper-tabs', {
+      
+      responsiveWidth: '480px'
+      
+    });
+    
+  </script>
+  
+</polymer-element>

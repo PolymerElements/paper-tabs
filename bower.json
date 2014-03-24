@@ -1,0 +1,9 @@
+{
+  "name": "paper-tabs",
+  "private": true,
+  "dependencies": {
+    "polymer": "Polymer/polymer#master",
+    "core-layout": "Polymer/core-layout#master",
+    "core-selector": "Polymer/core-selector#master"
+  }
+}
