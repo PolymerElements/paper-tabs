@@ -6,7 +6,7 @@
     <script src="../platform/platform.js"></script>
     
     <link rel="import" href="paper-tabs.html">
-    <link rel="import" href="../paper-appbar/paper-appbar.html">
+    <link rel="import" href="../core-toolbar/core-toolbar.html">
     <link rel="import" href="../paper-icon-button/paper-icon-button.html">
     
     <style shim-shadowdom>
@@ -25,7 +25,7 @@
         -webkit-touch-callout: none;
       }
       
-      paper-appbar {
+      core-toolbar {
         background-color: #3f51b5;
         color: #eee;
       }
@@ -44,11 +44,11 @@
     
     <br><br><br><br><br>
     
-    <paper-appbar class="seamed" theme="core-dark-theme">
+    <core-toolbar class="seamed" theme="core-dark-theme">
       <paper-icon-button icon="left"></paper-icon-button>
       <div core-flex>Music</div>
       <paper-icon-button icon="search"></paper-icon-button>
-    </paper-appbar>
+    </core-toolbar>
     
     <paper-tabs selected="0" class="secondary">
       <div>ALL</div>
