@@ -18,7 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../paper-ink/paper-ink.html">
 
-<polymer-element name="paper-tab">
+<polymer-element name="paper-tab" attributes="nospill">
 <template>
 
   <link rel="stylesheet" href="paper-tab.css">
@@ -37,6 +37,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   Polymer('paper-tab', {
     
+    nospill: false,
+    
     eventDelegates: {
       down: 'spill'
     },
@@ -48,6 +50,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
     
     spill: function(e) {
+      if (this.nospill || this.parentNode && this.parentNode.nospill) {
+        return;
+      }
       this.reset();
       this.$.tabContainer.classList.add('spill');
       var r = this.$.tabContainer.getBoundingClientRect();

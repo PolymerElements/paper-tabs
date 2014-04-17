@@ -31,7 +31,7 @@ Example:
 <link rel="import" href="../core-selector/core-selector.html">
 <link rel="import" href="paper-tab.html">
 
-<polymer-element name="paper-tabs" extends="core-selector">
+<polymer-element name="paper-tabs" extends="core-selector" attributes="nospill">
 <template>
 
   <link rel="stylesheet" href="paper-tabs.css">
@@ -49,6 +49,8 @@ Example:
   Polymer('paper-tabs', {
     
     activateEvent: 'down',
+    
+    nospill: false
     
   });
   
