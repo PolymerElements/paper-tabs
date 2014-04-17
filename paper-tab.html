@@ -1,0 +1,88 @@
+<!--
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<!--
+`paper-tab` 
+
+@group Quantum Paper Elements
+@element paper-tab
+@homepage github.io
+
+-->
+
+<link rel="import" href="../paper-ink/paper-ink.html">
+
+<polymer-element name="paper-tab">
+<template>
+
+  <link rel="stylesheet" href="paper-tab.css">
+  <link rel="stylesheet" href="../core-layout/core-layout.css">
+  
+  <div id="tabContainer" class="core-h core-justify-center core-align-center" on-transitionend="{{transitionEnd}}" on-webkittransitionend="{{transitionEnd}}">
+    
+    <div class="tab-content"><content></content></div>
+  
+    <paper-ink id="ink" color="#ffff8d" on-paper-ink-spill-complete="{{spillComplete}}"></paper-ink>
+    
+  </div>
+  
+</template>
+<script>
+
+  Polymer('paper-tab', {
+    
+    eventDelegates: {
+      down: 'spill'
+    },
+    
+    reset: function() {
+      this.$.tabContainer.classList.remove('spill');
+      this.$.tabContainer.classList.remove('after-spill');
+      this.$.tabContainer.classList.remove('drop');
+    },
+    
+    spill: function(e) {
+      this.reset();
+      this.$.tabContainer.classList.add('spill');
+      var r = this.$.tabContainer.getBoundingClientRect();
+      var w = r.width * 2;
+      this.setInkDimension(e.y - r.top - w/2 + 'px', 
+          e.x - r.left - w/2 + 'px', w + 'px');
+      this.async(function() {
+        this.$.ink.spill();
+      });
+    },
+    
+    setInkDimension: function(top, left, size) {
+      var s = this.$.ink.style;
+      s.top = top;
+      s.left = left;
+      s.width = s.height = size;
+    },
+    
+    spillComplete: function() {
+      this.setInkDimension(null, null, null);
+      this.$.ink.reset();
+      this.$.tabContainer.classList.remove('spill');
+      this.$.tabContainer.classList.add('after-spill');
+      this.async(function() {
+        this.$.tabContainer.classList.add('drop');
+      }, null, 1);
+    },
+    
+    transitionEnd: function() {
+      if (this.$.tabContainer.classList.contains('drop')) {
+        this.reset();
+      }
+    }
+    
+  });
+  
+</script>
+</polymer-element>
