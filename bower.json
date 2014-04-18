@@ -4,6 +4,7 @@
   "dependencies": {
     "polymer": "Polymer/polymer#master",
     "core-layout": "Polymer/core-layout#master",
-    "core-selector": "Polymer/core-selector#master"
+    "core-selector": "Polymer/core-selector#master",
+    "paper-ink": "Polymer/paper-ink#master"
   }
 }

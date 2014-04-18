@@ -8,12 +8,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <!--
-`paper-tab` 
+`paper-tab` is styled to look like a tab.  It should be used in conjunction with
+`paper-tabs`.
+
+Example:
+
+    <paper-tabs selected="0">
+      <paper-tab>TAB 1</paper-tab>
+      <paper-tab>TAB 2</paper-tab>
+      <paper-tab>TAB 3</paper-tab>
+    </paper-tabs>
 
 @group Quantum Paper Elements
 @element paper-tab
 @homepage github.io
-
 -->
 
 <link rel="import" href="../paper-ink/paper-ink.html">
@@ -37,6 +45,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   Polymer('paper-tab', {
     
+    /**
+     * If true, ink spill effect is disabled.
+     *
+     * @attribute nospill
+     * @type boolean
+     * @default false
+     */
     nospill: false,
     
     eventDelegates: {
