@@ -23,10 +23,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   overflow: hidden;
 }
 
-:host(.core-selected) #tabContainer:not(.spill) {
+#tabContainer {
   background-image: linear-gradient(#ffff8d, #ffff8d);
   background-repeat: no-repeat;
   background-position: bottom;
+  background-size: 0% 2px;
+  transition: background-size 0.1s ease-out;
+}
+
+:host(.core-selected:not(.no-underline)) #tabContainer:not(.spill) {
   background-size: 100% 2px;
 }
 
@@ -45,6 +50,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 paper-ink {
   position: absolute;
   pointer-events: none;
+}
+
+paper-ink::shadow #inkEffect {
+  background-color: #ffff8d;
 }
 
 #tabContainer.after-spill > paper-ink {

@@ -33,7 +33,7 @@ See <a href="../paper-tab/">paper-tab</a> for more information about
 <link rel="import" href="../core-selector/core-selector.html">
 <link rel="import" href="paper-tab.html">
 
-<polymer-element name="paper-tabs" extends="core-selector" attributes="nospill">
+<polymer-element name="paper-tabs" extends="core-selector" attributes="nospill transiting">
 <template>
 
   <link rel="stylesheet" href="paper-tabs.css">
@@ -42,6 +42,8 @@ See <a href="../paper-tab/">paper-tab</a> for more information about
   <div id="tabsContainer" class="core-h">
   
     <shadow></shadow>
+    
+    <div id="underlineSelect"></div>
     
   </div>
   
@@ -59,7 +61,23 @@ See <a href="../paper-tab/">paper-tab</a> for more information about
      */
     nospill: false,
     
-    activateEvent: 'down'
+    transiting: false,
+    
+    activateEvent: 'down',
+    
+    selectedItemChanged: function() {
+      this.super();
+      var item = this.selectedItem;
+      if (item) {
+        item.classList.toggle('no-underline', this.transiting);
+        var l = this.items.length;
+        var s = this.$.underlineSelect.style;
+        s.display = this.transiting ? 'block' : 'none';
+        s.width = 100 / l + '%';
+        s.left = this.selectedIndex * 100 / l + '%';  
+      }
+    }
+    
   });
   
 </script>

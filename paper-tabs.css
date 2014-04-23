@@ -15,8 +15,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 }
 
 #tabsContainer {
+  position: relative;
   height: 100%;
   white-space: nowrap;
+}
+
+#underlineSelect {
+  position: absolute;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #ffff8d;
+  transition: left 0.18s ease-out;
 }
 
 /*@polyfill #tabsContainer > * */

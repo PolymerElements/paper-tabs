@@ -6,9 +6,6 @@
   <script src="../platform/platform.js"></script>
   
   <link rel="import" href="paper-tabs.html">
-  <link rel="import" href="../core-toolbar/core-toolbar.html">
-  <link rel="import" href="../core-icon-button/core-icon-button.html">
-  <link rel="import" href="../font-roboto2/roboto2.html">
   
   <style>
   
@@ -17,7 +14,6 @@
     }
     
     body {
-      margin: 0;
       background-color: #f1f1f1;
       font-family: Roboto2, 'Helvetica Neue', Helvetica, Arial;
       -webkit-user-select: none;
@@ -31,7 +27,6 @@
     paper-tabs, core-toolbar {
       background-color: #00bcd4;
       color: #fff;
-      max-width: 600px;
     }
     
     paper-tabs {
@@ -43,17 +38,8 @@
 </head>
 <body unresolved>
 
-  <paper-tabs selected="0">
-  
-    <paper-tab>ITEM ONE</paper-tab>
-    <paper-tab>ITEM TWO</paper-tab>
-    <paper-tab>ITEM THREE</paper-tab>
-    
-  </paper-tabs>
-  
-  <br>
-  <br>
-  
+  <h3>Expand and Contract</h3>
+
   <paper-tabs selected="0" nospill>
   
     <paper-tab>ITEM ONE</paper-tab>
@@ -65,21 +51,26 @@
   <br>
   <br>
   
-  <core-toolbar>
+  <h3>The bar slides to the selected tab</h3>
   
-    <core-icon-button icon="menu"></core-icon-button>
-    <div core-flex>Title</div>
-    <core-icon-button icon="trash"></core-icon-button>
-    <core-icon-button icon="search"></core-icon-button>
+  <paper-tabs selected="0" nospill transiting>
   
-  </core-toolbar>
+    <paper-tab>ITEM ONE</paper-tab>
+    <paper-tab>ITEM TWO</paper-tab>
+    <paper-tab>ITEM THREE</paper-tab>
+    
+  </paper-tabs>
+  
+  <br>
+  <br>
+  
+  <h3>Ink effect</h3>
   
   <paper-tabs selected="0">
   
     <paper-tab>ITEM ONE</paper-tab>
     <paper-tab>ITEM TWO</paper-tab>
     <paper-tab>ITEM THREE</paper-tab>
-    <paper-tab>ITEM FOUR</paper-tab>
     
   </paper-tabs>
   
