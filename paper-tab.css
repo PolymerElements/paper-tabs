@@ -37,6 +37,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 .tab-content {
   transition: opacity 0.08s;
+  cursor: default;
 }
 
 :host(:not(.core-selected)) #tabContainer > .tab-content {
