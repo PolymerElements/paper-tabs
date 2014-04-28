@@ -20,13 +20,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   white-space: nowrap;
 }
 
-#underlineSelect {
+#selectionBar {
   position: absolute;
   height: 2px;
   bottom: 0;
   left: 0;
-  background-color: #ffff8d;
-  transition: left 0.18s ease-out;
+  background-color: #E0F795;
+  transition: left 0.18s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 /*@polyfill #tabsContainer > * */

@@ -26,17 +26,17 @@ Example:
 
 <link rel="import" href="../paper-ink/paper-ink.html">
 
-<polymer-element name="paper-tab" attributes="nospill">
+<polymer-element name="paper-tab" attributes="noink">
 <template>
 
   <link rel="stylesheet" href="paper-tab.css">
   <link rel="stylesheet" href="../core-layout/core-layout.css">
   
-  <div id="tabContainer" class="core-h core-justify-center core-align-center" on-transitionend="{{transitionEnd}}" on-webkittransitionend="{{transitionEnd}}">
+  <div id="tabContainer" class="core-h core-justify-center core-align-center">
     
     <div class="tab-content"><content></content></div>
   
-    <paper-ink id="ink" color="#ffff8d" on-paper-ink-spill-complete="{{spillComplete}}"></paper-ink>
+    <paper-ink id="ink" color="#E0F795" on-paper-ink-spill-complete="{{spillComplete}}"></paper-ink>
     
   </div>
   
@@ -46,60 +46,35 @@ Example:
   Polymer('paper-tab', {
     
     /**
-     * If true, ink spill effect is disabled.
+     * If true, ink effect is disabled.
      *
-     * @attribute nospill
+     * @attribute noink
      * @type boolean
      * @default false
      */
-    nospill: false,
+    noink: false,
     
     eventDelegates: {
       down: 'spill'
     },
     
-    reset: function() {
-      this.$.tabContainer.classList.remove('spill');
-      this.$.tabContainer.classList.remove('after-spill');
-      this.$.tabContainer.classList.remove('drop');
-    },
-    
     spill: function(e) {
-      if (this.nospill || this.parentNode && this.parentNode.nospill) {
+      if (this.noink || this.parentNode && this.parentNode.noink) {
         return;
       }
-      this.reset();
-      this.$.tabContainer.classList.add('spill');
       var r = this.$.tabContainer.getBoundingClientRect();
       var w = r.width * 2;
-      this.setInkDimension(e.y - r.top - w/2 + 'px', 
-          e.x - r.left - w/2 + 'px', w + 'px');
+      var s = this.$.ink.style;
+      s.top = e.y - r.top - w/2 + 'px';
+      s.left = e.x - r.left - w/2 + 'px';
+      s.width = s.height = w + 'px';
       this.async(function() {
         this.$.ink.spill();
       });
     },
     
-    setInkDimension: function(top, left, size) {
-      var s = this.$.ink.style;
-      s.top = top;
-      s.left = left;
-      s.width = s.height = size;
-    },
-    
     spillComplete: function() {
-      this.setInkDimension(null, null, null);
-      this.$.ink.reset();
-      this.$.tabContainer.classList.remove('spill');
-      this.$.tabContainer.classList.add('after-spill');
-      this.async(function() {
-        this.$.tabContainer.classList.add('drop');
-      }, null, 1);
-    },
-    
-    transitionEnd: function() {
-      if (this.$.tabContainer.classList.contains('drop')) {
-        this.reset();
-      }
+      this.$.ink.evaporate();
     }
     
   });
