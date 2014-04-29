@@ -36,5 +36,6 @@ paper-ink {
 }
 
 paper-ink::shadow #inkEffect {
+  border-color: #E0F795;
   opacity: 0.8;
 }

@@ -25,6 +25,14 @@ Example:
 See <a href="../paper-tab/">paper-tab</a> for more information about 
 `paper-tab`.
 
+Styling tabs:
+
+To change the sliding bar color:
+
+    paper-tabs.pink::shadow #selectionBar {
+      background-color: #ff4081;
+    }
+
 @group Quantum Paper Elements
 @element paper-tabs
 @homepage github.io
@@ -33,7 +41,7 @@ See <a href="../paper-tab/">paper-tab</a> for more information about
 <link rel="import" href="../core-selector/core-selector.html">
 <link rel="import" href="paper-tab.html">
 
-<polymer-element name="paper-tabs" extends="core-selector" attributes="noink">
+<polymer-element name="paper-tabs" extends="core-selector" attributes="noink nobar">
 <template>
 
   <link rel="stylesheet" href="paper-tabs.css">
@@ -43,7 +51,7 @@ See <a href="../paper-tab/">paper-tab</a> for more information about
   
     <shadow></shadow>
     
-    <div id="selectionBar"></div>
+    <div id="selectionBar" hidden?="{{nobar}}" on-transitionend="{{barTransitionEnd}}"></div>
     
   </div>
   
@@ -61,15 +69,47 @@ See <a href="../paper-tab/">paper-tab</a> for more information about
      */
     noink: false,
     
+    /**
+     * If true, the bottom bar to indicate the selected tab will not be shown.
+     *
+     * @attribute nobar
+     * @type boolean
+     * @default false
+     */
+    nobar: false,
+    
     activateEvent: 'down',
     
-    selectedItemChanged: function() {
-      this.super();
-      if (this.selectedItem) {
-        var l = this.items.length;
+    nostretch: false,
+    
+    selectedIndexChanged: function(old) {
+      var s = this.$.selectionBar.style;
+      var w = 100 / this.items.length;
+      
+      if (this.nostretch || old === null || old === -1) {
+        s.width = w + '%';
+        s.left = this.selectedIndex * w + '%';
+        return;
+      }
+      
+      var m = 5;
+      this.$.selectionBar.classList.add('expand');
+      if (old < this.selectedIndex) {
+        s.width = w + w * (this.selectedIndex - old) - m + '%';
+      } else {
+        s.width = w + w * (old - this.selectedIndex) - m + '%';
+        s.left = this.selectedIndex * w + m + '%';
+      }
+    },
+    
+    barTransitionEnd: function() {
+      if (this.$.selectionBar.classList.contains('expand')) {
+        this.$.selectionBar.classList.remove('expand');
+        this.$.selectionBar.classList.add('contract');
         var s = this.$.selectionBar.style;
-        s.width = 100 / l + '%';
-        s.left = this.selectedIndex * 100 / l + '%';  
+        var w = 100 / this.items.length;
+        s.width = w + '%';
+        s.left = this.selectedIndex * w + '%';
       }
     }
     

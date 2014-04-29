@@ -18,6 +18,14 @@ Example:
       <paper-tab>TAB 2</paper-tab>
       <paper-tab>TAB 3</paper-tab>
     </paper-tabs>
+    
+Styling tab:
+
+To change the ink color:
+
+    .pink paper-tab::shadow paper-ink::shadow #inkEffect {
+      border-color: #ff4081;
+    }
 
 @group Quantum Paper Elements
 @element paper-tab
@@ -36,7 +44,7 @@ Example:
     
     <div class="tab-content"><content></content></div>
   
-    <paper-ink id="ink" color="#E0F795" on-paper-ink-spill-complete="{{spillComplete}}"></paper-ink>
+    <paper-ink id="ink" on-paper-ink-spill-complete="{{spillComplete}}"></paper-ink>
     
   </div>
   

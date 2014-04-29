@@ -24,13 +24,22 @@
       -webkit-touch-callout: none;
     }
     
-    paper-tabs, core-toolbar {
+    paper-tabs {
       background-color: #00bcd4;
       color: #fff;
+      box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16);
     }
     
-    paper-tabs {
-      box-shadow: 0px 3px 2px rgba(0, 0, 0, 0.2);
+    paper-tabs.pink {
+      background-color: #3f51b5;
+    }
+    
+    paper-tabs.pink::shadow #selectionBar {
+      background-color: #ff4081;
+    }
+    
+    paper-tabs.pink /deep/ paper-ink::shadow #inkEffect {
+      border-color: #ff4081;
     }
     
   </style>
@@ -38,7 +47,27 @@
 </head>
 <body unresolved>
 
-  <h3>Ink effect</h3>
+  <h3>No ink effect and no sliding bar</h3>
+  
+  <paper-tabs selected="0" noink nobar>
+  
+    <paper-tab>ITEM ONE</paper-tab>
+    <paper-tab>ITEM TWO</paper-tab>
+    <paper-tab>ITEM THREE</paper-tab>
+    
+  </paper-tabs>
+
+  <h3>The bar slides to the selected tab</h3>
+  
+  <paper-tabs selected="0" noink>
+  
+    <paper-tab>ITEM ONE</paper-tab>
+    <paper-tab>ITEM TWO</paper-tab>
+    <paper-tab>ITEM THREE</paper-tab>
+    
+  </paper-tabs>
+  
+  <h3>Inky Tabs</h3>
   
   <paper-tabs selected="0">
   
@@ -47,10 +76,10 @@
     <paper-tab>ITEM THREE</paper-tab>
     
   </paper-tabs>
-
-  <h3>No Ink effect: the bar simply slides to the selected tab</h3>
   
-  <paper-tabs selected="0" noink>
+  <br>
+  
+  <paper-tabs class="pink" selected="0">
   
     <paper-tab>ITEM ONE</paper-tab>
     <paper-tab>ITEM TWO</paper-tab>
