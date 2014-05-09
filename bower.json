@@ -2,9 +2,12 @@
   "name": "paper-tabs",
   "private": true,
   "dependencies": {
-    "polymer": "Polymer/polymer#master",
+    "core-icons": "Polymer/core-icons#master",
     "core-layout": "Polymer/core-layout#master",
     "core-selector": "Polymer/core-selector#master",
+    "core-toolbar": "Polymer/core-toolbar#master",
+    "font-roboto2": "Polymer/font-roboto2#master",
+    "paper-icon-button": "Polymer/paper-icon-button#master",
     "paper-ink": "Polymer/paper-ink#master"
   }
 }
