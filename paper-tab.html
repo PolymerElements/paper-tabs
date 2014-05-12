@@ -23,8 +23,8 @@ Styling tab:
 
 To change the ink color:
 
-    .pink paper-tab::shadow paper-ink::shadow #inkEffect {
-      border-color: #ff4081;
+    .pink paper-tab::shadow #ink {
+      color: #ff4081;
     }
 
 @group Quantum Paper Elements
@@ -32,7 +32,7 @@ To change the ink color:
 @homepage github.io
 -->
 
-<link rel="import" href="../paper-ink/paper-ink.html">
+<link rel="import" href="../paper-ripple/paper-ripple.html">
 
 <polymer-element name="paper-tab" attributes="noink">
 <template>
@@ -43,8 +43,8 @@ To change the ink color:
   <div id="tabContainer" class="core-h core-justify-center core-align-center">
     
     <div class="tab-content"><content></content></div>
-  
-    <paper-ink id="ink" on-paper-ink-spill-complete="{{spillComplete}}"></paper-ink>
+    
+    <paper-ripple id="ink" initialOpacity="0.95" opacityDecayVelocity="0.98"></paper-ripple>
     
   </div>
   
@@ -54,36 +54,13 @@ To change the ink color:
   Polymer('paper-tab', {
     
     /**
-     * If true, ink effect is disabled.
+     * If true, ink ripple effect is disabled.
      *
      * @attribute noink
      * @type boolean
      * @default false
      */
-    noink: false,
-    
-    eventDelegates: {
-      down: 'spill'
-    },
-    
-    spill: function(e) {
-      if (this.noink || this.parentNode && this.parentNode.noink) {
-        return;
-      }
-      var r = this.$.tabContainer.getBoundingClientRect();
-      var w = r.width * 2;
-      var s = this.$.ink.style;
-      s.top = e.y - r.top - w/2 + 'px';
-      s.left = e.x - r.left - w/2 + 'px';
-      s.width = s.height = w + 'px';
-      this.async(function() {
-        this.$.ink.spill();
-      });
-    },
-    
-    spillComplete: function() {
-      this.$.ink.evaporate();
-    }
+    noink: false
     
   });
   

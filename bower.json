@@ -8,6 +8,6 @@
     "core-toolbar": "Polymer/core-toolbar#master",
     "font-roboto2": "Polymer/font-roboto2#master",
     "paper-icon-button": "Polymer/paper-icon-button#master",
-    "paper-ink": "Polymer/paper-ink#master"
+    "paper-ripple": "Polymer/paper-ripple#master"
   }
 }

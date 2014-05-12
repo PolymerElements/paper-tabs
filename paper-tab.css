@@ -22,20 +22,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 }
 
 .tab-content {
-  transition: opacity 0.08s;
+  transition: opacity .1s cubic-bezier(0.4, 0.0, 1, 1), color .1s cubic-bezier(0.4, 0.0, 1, 1);
   cursor: default;
+  pointer-events: none;
 }
 
 :host(:not(.core-selected)) #tabContainer > .tab-content {
   opacity: 0.6;
 }
 
-paper-ink {
+#ink {
   position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  color: #E0F795;
+}
+
+:host[noink] #ink {
   pointer-events: none;
 }
 
-paper-ink::shadow #inkEffect {
-  border-color: #E0F795;
-  opacity: 0.8;
+:host-context(paper-tabs[noink]) #ink {
+  pointer-events: none;
 }
