@@ -46,16 +46,14 @@ To change the sliding bar color:
 <template>
 
   <link rel="stylesheet" href="paper-tabs.css">
-  <link rel="stylesheet" href="../core-layout/core-layout.css">
   
-  <div id="tabsContainer" class="core-h">
+  <div id="tabsContainer" horizontal layout>
   
     <shadow></shadow>
-    
     <div id="selectionBar" hidden?="{{nobar}}" on-transitionend="{{barTransitionEnd}}"></div>
     
   </div>
-  
+    
 </template>
 <script>
 

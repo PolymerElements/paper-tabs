@@ -3,7 +3,6 @@
   "private": true,
   "dependencies": {
     "core-icons": "Polymer/core-icons#master",
-    "core-layout": "Polymer/core-layout#master",
     "core-selector": "Polymer/core-selector#master",
     "core-toolbar": "Polymer/core-toolbar#master",
     "font-roboto2": "Polymer/font-roboto2#master",

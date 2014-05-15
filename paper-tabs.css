@@ -9,14 +9,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 :host {
   display: block;
+  position: relative;
   font-size: 14px;
   font-weight: 500;
   height: 48px;
 }
 
 #tabsContainer {
-  position: relative;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   white-space: nowrap;
 }
 
@@ -44,7 +48,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
 }
 
-/*@polyfill #tabsContainer > * */
+/*@polyfill :host > *:not(#selectionBar) */
 ::content > * {
   -ms-flex: 1;
   -webkit-flex: 1;
