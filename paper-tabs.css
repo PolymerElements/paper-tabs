@@ -48,7 +48,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
 }
 
-/*@polyfill :host > *:not(#selectionBar) */
+polyfill-next-selector { content: '#tabsContainer > *:not(#selectionBar)'; }
 ::content > * {
   -ms-flex: 1;
   -webkit-flex: 1;

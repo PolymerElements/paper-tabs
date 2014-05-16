@@ -39,6 +39,20 @@
       color: #E0F795;
     }
     
+    paper-tabs.transparent-teal {
+      background-color: transparent;
+      color: #00bcd4;
+      box-shadow: none;
+    }
+    
+    paper-tabs.transparent-teal::shadow #selectionBar {
+      background-color: #00bcd4;
+    }
+    
+    paper-tabs.transparent-teal paper-tab::shadow #ink {
+      color: #00bcd4;
+    }
+    
     .fit {
       position: absolute;
       top: 0;
@@ -91,6 +105,17 @@
   <br>
   <br>
   
+  <paper-tabs selected="0" class="transparent-teal">
+  
+    <paper-tab>ITEM ONE</paper-tab>
+    <paper-tab>ITEM TWO</paper-tab>
+    <paper-tab>ITEM THREE</paper-tab>
+    
+  </paper-tabs>
+  
+  <br>
+  <br>
+  
   <core-toolbar class="medium-tall">
   
     <paper-icon-button icon="menu"></paper-icon-button>
@@ -98,7 +123,7 @@
     <paper-icon-button icon="search"></paper-icon-button>
     <paper-icon-button icon="more-vert"></paper-icon-button>
     
-    <div class="bottom fit" center-justified end horizontal layout>
+    <div class="bottom fit" horizontal center-justified end layout>
     
       <paper-tabs selected="0" flex style="max-width: 600px;">
     
