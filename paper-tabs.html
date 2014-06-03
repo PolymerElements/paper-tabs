@@ -83,6 +83,13 @@ To change the sliding bar color:
     
     selectedIndexChanged: function(old) {
       var s = this.$.selectionBar.style;
+      
+      if (!this.selectedItem) {
+        s.width = 0;
+        s.left = 0;
+        return;
+      } 
+      
       var w = 100 / this.items.length;
       
       if (this.nostretch || old === null || old === -1) {
@@ -102,13 +109,16 @@ To change the sliding bar color:
     },
     
     barTransitionEnd: function() {
-      if (this.$.selectionBar.classList.contains('expand')) {
-        this.$.selectionBar.classList.remove('expand');
-        this.$.selectionBar.classList.add('contract');
+      var cl = this.$.selectionBar.classList;
+      if (cl.contains('expand')) {
+        cl.remove('expand');
+        cl.add('contract');
         var s = this.$.selectionBar.style;
         var w = 100 / this.items.length;
         s.width = w + '%';
         s.left = this.selectedIndex * w + '%';
+      } else if (cl.contains('contract')) {
+        cl.remove('contract');
       }
     }
     
