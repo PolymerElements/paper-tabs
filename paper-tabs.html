@@ -25,6 +25,24 @@ Example:
 See <a href="#paper-tab">paper-tab</a> for more information about 
 `paper-tab`.
 
+A common usage for `paper-tabs` is to use it along with `core-pages` to switch
+between different views.
+
+    <paper-tabs selected="{{selected}}">
+      <paper-tab>Tab 1</paper-tab>
+      <paper-tab>Tab 2</paper-tab>
+      <paper-tab>Tab 3</paper-tab>
+    </paper-tabs>
+  
+    <core-pages selected="{{selected}}>
+      <div>Page 1</div>
+      <div>Page 2</div>
+      <div>Page 3</div>
+    </core-pages>
+    
+`paper-tabs` adapt to mobile/narrow layout when there is a `core-narrow` class set
+on itself or any of its ancestors.
+
 Styling tabs:
 
 To change the sliding bar color:
@@ -40,18 +58,29 @@ To change the sliding bar color:
 -->
 
 <link rel="import" href="../core-selector/core-selector.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="paper-tab.html">
 
-<polymer-element name="paper-tabs" extends="core-selector" attributes="noink nobar" role="tablist">
+<polymer-element name="paper-tabs" extends="core-selector" attributes="noink nobar noslide scrollable hideScrollButton" role="tablist" horizontal center layout>
 <template>
 
   <link rel="stylesheet" href="paper-tabs.css">
   
-  <div id="tabsContainer" horizontal layout>
+  <div class="scroll-button" hidden?="{{!scrollable || hideScrollButton}}">
+    <paper-icon-button icon="chevron-left" class="{{ {hidden: leftHidden} | tokenList }}" on-down="{{holdLeft}}" on-up="{{releaseHold}}"></paper-icon-button>
+  </div>
   
-    <shadow></shadow>
-    <div id="selectionBar" hidden?="{{nobar}}" on-transitionend="{{barTransitionEnd}}"></div>
+  <div id="tabsContainer" class="{{ {scrollable: scrollable} | tokenList }}" flex on-scroll="{{scroll}}" on-trackstart="{{trackStart}}">
+  
+    <div id="tabsContent" horizontal layout?="{{!scrollable}}">
+      <shadow></shadow>
+      <div id="selectionBar" hidden?="{{nobar}}" on-transitionend="{{barTransitionEnd}}"></div>
+    </div>
     
+  </div>
+  
+  <div class="scroll-button" hidden?="{{!scrollable || hideScrollButton}}">
+    <paper-icon-button icon="chevron-right" class="{{ {hidden: rightHidden} | tokenList }}" on-down="{{holdRight}}" on-up="{{releaseHold}}"></paper-icon-button>
   </div>
     
 </template>
@@ -60,7 +89,7 @@ To change the sliding bar color:
   Polymer('paper-tabs', {
     
     /**
-     * If true, ink effect is disabled.
+     * If true, ink ripple effect is disabled.
      *
      * @attribute noink
      * @type boolean
@@ -77,11 +106,98 @@ To change the sliding bar color:
      */
     nobar: false,
     
-    activateEvent: 'down',
+    /**
+     * If true, the bottom bar will appear for the selected tab but without
+     * slide effect.
+     *
+     * @attribute noslide
+     * @type boolean
+     * @default false
+     */
+    noslide: false,
     
-    nostretch: false,
+    /**
+     * If true, tabs are scrollable and the tab width is based on the label width.
+     *
+     * @attribute scrollable
+     * @type boolean
+     * @default false
+     */
+    scrollable: false,
     
-    selectedIndexChanged: function(old) {
+    /**
+     * If true, scroll buttons (left/right arrow) will be hidden for scrollable tabs.
+     *
+     * @attribute hideScrollButton
+     * @type boolean
+     * @default false
+     */
+    hideScrollButton: false,
+    
+    activateEvent: 'tap',
+    
+    step: 10,
+    
+    holdDelay: 10,
+    
+    ready: function() {
+      this.super();
+      this._trackxHandler = this.trackx.bind(this);
+      Polymer.addEventListener(this.$.tabsContainer, 'trackx', this._trackxHandler);
+    },
+    
+    domReady: function() {
+      this.async('scroll');
+    },
+    
+    detached: function() {
+      Polymer.removeEventListener(this.$.tabsContainer, 'trackx', this._trackxHandler);
+    },
+    
+    trackStart: function(e) {
+      var t = e.target;
+      if (t && t.cancelRipple) {
+        t.cancelRipple();
+      }
+      this._startx = this.$.tabsContainer.scrollLeft;
+      e.preventTap();
+    },
+    
+    trackx: function(e) {
+      this.$.tabsContainer.scrollLeft = this._startx - e.dx;
+    },
+    
+    scroll: function() {
+      var tc = this.$.tabsContainer;
+      var l = tc.scrollLeft;
+      this.leftHidden = l === 0;
+      this.rightHidden = l === (tc.scrollWidth - tc.clientWidth);
+    },
+    
+    holdLeft: function() {
+      this.holdJob = setInterval(this.scrollToLeft.bind(this), this.holdDelay);
+    },
+    
+    holdRight: function() {
+      this.holdJob = setInterval(this.scrollToRight.bind(this), this.holdDelay);
+    },
+    
+    releaseHold: function() {
+      clearInterval(this.holdJob);
+      this.holdJob = null;
+    },
+    
+    scrollToLeft: function() {
+      this.$.tabsContainer.scrollLeft -= this.step;
+    },
+    
+    scrollToRight: function() {
+      this.$.tabsContainer.scrollLeft += this.step;
+    },
+    
+    selectedItemChanged: function(old) {
+      var oldIndex = this.selectedIndex;
+      this.super(arguments);
       var s = this.$.selectionBar.style;
       
       if (!this.selectedItem) {
@@ -90,24 +206,46 @@ To change the sliding bar color:
         return;
       } 
       
-      var w = 100 / this.items.length;
+      var r = this.$.tabsContent.getBoundingClientRect();
+      this._w = r.width;
+      this._l = r.left;
       
-      if (this.nostretch || old === null || old === -1) {
-        s.width = w + '%';
-        s.left = this.selectedIndex * w + '%';
+      r = this.selectedItem.getBoundingClientRect();
+      this._sw = r.width;
+      this._sl = r.left;
+      
+      if (this.noslide || old === null || old === -1) {
+        this.positionBarForSelected();
         return;
       }
       
+      var oldRect = old.getBoundingClientRect();
+      
       var m = 5;
       this.$.selectionBar.classList.add('expand');
-      if (old < this.selectedIndex) {
-        s.width = w + w * (this.selectedIndex - old) - m + '%';
+      if (oldIndex < this.selectedIndex) {
+        s.width = this.calcPercent(this._sl + this._sw - oldRect.left) - m + '%';
         this._transitionCounter = 1;
       } else {
-        s.width = w + w * (old - this.selectedIndex) - m + '%';
-        s.left = this.selectedIndex * w + m + '%';
+        s.width = this.calcPercent(oldRect.left + oldRect.width - this._sl) - m + '%';
+        s.left = this.calcPercent(this._sl - this._l) + m + '%';
         this._transitionCounter = 2;
       }
+      if (this.scrollable) {
+        this.selectedItem.scrollIntoViewIfNeeded ? 
+            this.selectedItem.scrollIntoViewIfNeeded(false) : 
+            this.selectedItem.scrollIntoView();
+      }
+    },
+    
+    positionBarForSelected: function() {
+      var s = this.$.selectionBar.style;
+      s.width = this.calcPercent(this._sw) + '%';
+      s.left = this.calcPercent(this._sl - this._l) + '%';
+    },
+    
+    calcPercent: function(w) {
+      return 100 * w / this._w;
     },
     
     barTransitionEnd: function(e) {
@@ -116,10 +254,7 @@ To change the sliding bar color:
       if (cl.contains('expand') && !this._transitionCounter) {
         cl.remove('expand');
         cl.add('contract');
-        var s = this.$.selectionBar.style;
-        var w = 100 / this.items.length;
-        s.width = w + '%';
-        s.left = this.selectedIndex * w + '%';
+        this.positionBarForSelected();
       } else if (cl.contains('contract')) {
         cl.remove('contract');
       }
