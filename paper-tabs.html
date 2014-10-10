@@ -144,14 +144,17 @@ To change the sliding bar color:
       this.super();
       this._trackxHandler = this.trackx.bind(this);
       Polymer.addEventListener(this.$.tabsContainer, 'trackx', this._trackxHandler);
+      this._tabsObserver = new MutationObserver(this.update.bind(this));
     },
     
     domReady: function() {
       this.async('scroll');
+      this._tabsObserver.observe(this, {childList: true, subtree: true, characterData: true});
     },
     
     detached: function() {
       Polymer.removeEventListener(this.$.tabsContainer, 'trackx', this._trackxHandler);
+      this._tabsObserver.disconnect();
     },
     
     trackStart: function(e) {
@@ -195,6 +198,10 @@ To change the sliding bar color:
       this.$.tabsContainer.scrollLeft += this.step;
     },
     
+    update: function() {
+      this.async('selectedItemChanged')
+    },
+    
     selectedItemChanged: function(old) {
       var oldIndex = this.selectedIndex;
       this.super(arguments);
@@ -214,7 +221,7 @@ To change the sliding bar color:
       this._sw = r.width;
       this._sl = r.left;
       
-      if (this.noslide || old === null || old === -1) {
+      if (this.noslide || old == null || old === -1) {
         this.positionBarForSelected();
         return;
       }
