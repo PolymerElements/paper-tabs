@@ -43,12 +43,35 @@ between different views.
 `paper-tabs` adapt to mobile/narrow layout when there is a `core-narrow` class set
 on itself or any of its ancestors.
 
+To use links in tabs, add `link` attribute to `paper-tabs` and put an `<a>`
+element in `paper-tab`.
+
+Example:
+
+    <paper-tabs selected="0" link>
+      <paper-tab>
+        <a href="#link1" horizontal center-center layout>TAB ONE</a>
+      </paper-tab>
+      <paper-tab>
+        <a href="#link2" horizontal center-center layout>TAB TWO</a>
+      </paper-tab>
+      <paper-tab>
+        <a href="#link3" horizontal center-center layout>TAB THREE</a>
+      </paper-tab>
+    </paper-tabs>
+
 Styling tabs:
 
 To change the sliding bar color:
 
     paper-tabs.pink::shadow #selectionBar {
       background-color: #ff4081;
+    }
+    
+To change the ink ripple color:
+
+    paper-tabs.pink paper-tab::shadow #ink {
+      color: #ff4081;
     }
 
 @group Paper Elements
@@ -107,8 +130,7 @@ To change the sliding bar color:
     nobar: false,
     
     /**
-     * If true, the bottom bar will appear for the selected tab but without
-     * slide effect.
+     * If true, the slide effect for the bottom bar is disabled.
      *
      * @attribute noslide
      * @type boolean
@@ -144,7 +166,7 @@ To change the sliding bar color:
       this.super();
       this._trackxHandler = this.trackx.bind(this);
       Polymer.addEventListener(this.$.tabsContainer, 'trackx', this._trackxHandler);
-      this._tabsObserver = new MutationObserver(this.update.bind(this));
+      this._tabsObserver = new MutationObserver(this.updateBar.bind(this));
     },
     
     domReady: function() {
@@ -198,8 +220,15 @@ To change the sliding bar color:
       this.$.tabsContainer.scrollLeft += this.step;
     },
     
-    update: function() {
-      this.async('selectedItemChanged')
+    /**
+     * Invoke this to update the size and position of the bottom bar.  Usually
+     * you only need to call this if the `paper-tabs` is initially hidden and
+     * later becomes visible.
+     *
+     * @method updateBar
+     */
+    updateBar: function() {
+      this.async('selectedItemChanged');
     },
     
     selectedItemChanged: function(old) {
@@ -221,7 +250,7 @@ To change the sliding bar color:
       this._sw = r.width;
       this._sl = r.left;
       
-      if (this.noslide || old == null || old === -1) {
+      if (this.noslide || old == null) {
         this.positionBarForSelected();
         return;
       }
