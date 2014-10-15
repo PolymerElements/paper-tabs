@@ -148,6 +148,15 @@ To change the ink ripple color:
     scrollable: false,
     
     /**
+     * If true, dragging on the tabs to scroll is disabled.
+     *
+     * @attribute disableDrag
+     * @type boolean
+     * @default false
+     */
+    disableDrag: false,
+    
+    /**
      * If true, scroll buttons (left/right arrow) will be hidden for scrollable tabs.
      *
      * @attribute hideScrollButton
@@ -180,6 +189,9 @@ To change the ink ripple color:
     },
     
     trackStart: function(e) {
+      if (!this.scrollable || this.disableDrag) {
+        return;
+      }
       var t = e.target;
       if (t && t.cancelRipple) {
         t.cancelRipple();
@@ -189,10 +201,16 @@ To change the ink ripple color:
     },
     
     trackx: function(e) {
+      if (!this.scrollable || this.disableDrag) {
+        return;
+      }
       this.$.tabsContainer.scrollLeft = this._startx - e.dx;
     },
     
     scroll: function() {
+      if (!this.scrollable) {
+        return;
+      }
       var tc = this.$.tabsContainer;
       var l = tc.scrollLeft;
       this.leftHidden = l === 0;
