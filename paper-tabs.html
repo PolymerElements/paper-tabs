@@ -267,6 +267,7 @@ To change the ink ripple color:
       r = this.selectedItem.getBoundingClientRect();
       this._sw = r.width;
       this._sl = r.left;
+      this._sOffsetLeft = this._sl - this._l; 
       
       if (this.noslide || old == null) {
         this.positionBarForSelected();
@@ -282,20 +283,27 @@ To change the ink ripple color:
         this._transitionCounter = 1;
       } else {
         s.width = this.calcPercent(oldRect.left + oldRect.width - this._sl) - m + '%';
-        s.left = this.calcPercent(this._sl - this._l) + m + '%';
+        s.left = this.calcPercent(this._sOffsetLeft) + m + '%';
         this._transitionCounter = 2;
       }
       if (this.scrollable) {
-        this.selectedItem.scrollIntoViewIfNeeded ? 
-            this.selectedItem.scrollIntoViewIfNeeded(false) : 
-            this.selectedItem.scrollIntoView();
+        this.scrollToSelectedIfNeeded();
+      }
+    },
+    
+    scrollToSelectedIfNeeded: function() {
+      var scrollLeft = this.$.tabsContainer.scrollLeft;
+      // scroll to selected if needed
+      if (this._sOffsetLeft + this._sw < scrollLeft || 
+          this._sOffsetLeft - scrollLeft > this.$.tabsContainer.offsetWidth) {
+        this.$.tabsContainer.scrollLeft = this._sOffsetLeft;
       }
     },
     
     positionBarForSelected: function() {
       var s = this.$.selectionBar.style;
       s.width = this.calcPercent(this._sw) + '%';
-      s.left = this.calcPercent(this._sl - this._l) + '%';
+      s.left = this.calcPercent(this._sOffsetLeft) + '%';
     },
     
     calcPercent: function(w) {
