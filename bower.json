@@ -8,6 +8,7 @@
     "core-media-query": "Polymer/core-media-query#master",
     "font-roboto": "Polymer/font-roboto#master",
     "paper-icon-button": "Polymer/paper-icon-button#master",
-    "paper-ripple": "Polymer/paper-ripple#master"
+    "paper-ripple": "Polymer/paper-ripple#master",
+    "core-resizable": "Polymer/core-resizable#master"
   }
 }
