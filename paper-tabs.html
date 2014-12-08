@@ -189,13 +189,13 @@ To change the ink ripple color:
     },
 
     attached: function() {
-      this.resizeableAttachedHandler();
+      this.resizableAttachedHandler();
     },
     
     detached: function() {
       Polymer.removeEventListener(this.$.tabsContainer, 'trackx', this._trackxHandler);
       this._tabsObserver.disconnect();
-      this.resizeableDetachedHandler();
+      this.resizableDetachedHandler();
     },
     
     trackStart: function(e) {
