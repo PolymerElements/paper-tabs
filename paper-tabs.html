@@ -167,7 +167,7 @@ To change the ink ripple color:
     hideScrollButton: false,
 
     eventDelegates: {
-      'core-resize': 'updateBar'
+      'core-resize': 'resizeHandler'
     },
     
     activateEvent: 'tap',
@@ -215,6 +215,11 @@ To change the ink ripple color:
         return;
       }
       this.$.tabsContainer.scrollLeft = this._startx - e.dx;
+    },
+    
+    resizeHandler: function() {
+      this.scroll();
+      this.updateBar();
     },
     
     scroll: function() {
