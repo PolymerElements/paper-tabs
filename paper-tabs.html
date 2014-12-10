@@ -184,7 +184,7 @@ To change the ink ripple color:
     },
     
     domReady: function() {
-      this.async('scroll');
+      this.async('resizeHandler');
       this._tabsObserver.observe(this, {childList: true, subtree: true, characterData: true});
     },
 
