@@ -10,6 +10,7 @@
   "repository": "https://github.com/Polymer/paper-tabs/tree/0.8-preview",
   "dependencies": {
     "polymer": "Polymer/polymer#0.8-preview",
+    "layout": "Polymer/layout#master",
     "core-selector": "Polymer/core-selector#0.8-preview",
     "paper-ripple": "Polymer/paper-ripple#0.8-preview",
     "core-resizable": "Polymer/core-resizable#0.8-preview",
