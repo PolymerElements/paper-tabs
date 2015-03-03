@@ -347,7 +347,9 @@ Example:
     },
 
     computeSelectionBarClass: function(nobar, alignBottom) {
-      if (!nobar && alignBottom) {
+      if (nobar) {
+        return 'hidden';
+      } else if (alignBottom) {
         return 'align-bottom';
       }
     },
