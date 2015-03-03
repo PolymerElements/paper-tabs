@@ -165,7 +165,7 @@ Example:
 
     <div id="tabsContainer" class="flex" on-scroll="scroll" on-trackstart="trackStart">
 
-      <core-selector id="tabsContent" class$="[[tabsContentClass]]" selected="{{selected}}" selected-item="{{tab}}" selectable="paper-tab">
+      <core-selector id="tabsContent" class$="[[tabsContentClass]]" selected="{{selected}}" selected-item="{{tab}}" attr-for-selected="[[attrForSelected]]" selectable="paper-tab">
         <content select="*"></content>
         <div id="selectionBar" class$="[[selectionBarClass]]" on-transitionend="barTransitionEnd"></div>
       </core-selector>
@@ -193,7 +193,16 @@ Example:
     published: {
 
       /**
-       * Gets or sets the selected element.
+       * If you want to use the attribute value of the tab element for `selected` instead of the
+       * index, set this to the name of the attribute.
+       *
+       * @attribute attrForSelected
+       * @type String
+       */
+      attrForSelected: String,
+
+      /**
+       * Gets or sets the selected tab. The default is to use the index of the tab.
        *
        * @attribute selected
        * @type String
