@@ -65,11 +65,13 @@ Example:
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../layout/layout.html">
+
 <link rel="import" href="paper-tabs-icons.html">
+<link rel="import" href="paper-tab.html">
+
 <link rel="import" href="../core-selector/core-selector.html">
 <link rel="import" href="../core-icon/core-icon.html">
 <link rel="import" href="../core-resizable/core-resizable.html">
-<link rel="import" href="paper-tab.html">
 
 <dom-module id="paper-tabs">
 
@@ -104,20 +106,18 @@ Example:
       height: 100%;
     }
 
-    paper-tabs #tabsContainer[scrollable] > #tabsContent {
+    paper-tabs #tabsContent.scrollable {
       position: absolute;
       white-space: nowrap;
     }
 
     paper-tabs .scroll-button {
-      width: 56px;
+      width: 24px;
+      padding: 16px;
     }
 
-    paper-tabs .scroll-button[hidden] {
-      display: none;
-    }
-
-    paper-tabs .scroll-button > [hide] {
+    paper-tabs .scroll-button > .hide {
+      display: inline-block;
       opacity: 0;
     }
 
@@ -136,7 +136,7 @@ Example:
       transition: transform;
     }
 
-    paper-tabs #selectionBar[align-bottom] {
+    paper-tabs #selectionBar.align-bottom {
       top: 0;
       bottom: auto;
     }
@@ -159,21 +159,21 @@ Example:
 
   <template>
 
-    <div class="scroll-button center-center horizontal layout" hidden$="[[hideScrollButtons]]">
-      <core-icon icon="paper-tabs:chevron-left" hide$="[[leftHidden]]" on-mousedown="holdLeft" on-mouseup="releaseHold"></core-icon>
+    <div class$="[[scrollButtonClass]]">
+      <core-icon icon="paper-tabs:chevron-left" class$="[[leftIconClass]]" on-mousedown="holdLeft" on-mouseup="releaseHold"></core-icon>
     </div>
 
-    <div id="tabsContainer" class="flex" scrollable$="[[scrollable]]" on-scroll="scroll" on-trackstart="trackStart">
+    <div id="tabsContainer" class="flex" on-scroll="scroll" on-trackstart="trackStart">
 
       <core-selector id="tabsContent" class$="[[tabsContentClass]]" selected="{{selected}}" selected-item="{{tab}}" selectable="paper-tab">
         <content select="*"></content>
-        <div id="selectionBar" hidden="[[nobar]]" align-bottom$="[[alignBottom]]" on-transitionend="barTransitionEnd"></div>
+        <div id="selectionBar" class$="[[selectionBarClass]]" on-transitionend="barTransitionEnd"></div>
       </core-selector>
 
     </div>
 
-    <div class="scroll-button center-center horizontal layout" hidden$="[[hideScrollButtons]]">
-      <core-icon icon="paper-tabs:chevron-right" hide$="[[rightHidden]]" on-mousedown="holdRight" on-mouseup="releaseHold"></core-icon>
+    <div class$="[[scrollButtonClass]]">
+      <core-icon icon="paper-tabs:chevron-right" class$="[[rightIconClass]]" on-mousedown="holdRight" on-mouseup="releaseHold"></core-icon>
     </div>
 
   </template>
@@ -274,17 +274,16 @@ Example:
     },
 
     computed: {
-      hideScrollButtons: 'computeHideScrollButtons(scrollable, hideScrollButton)',
-      tabsContentClass: 'computeTabsContentClass(scrollable)'
+      scrollButtonClass: 'computeScrollButtonClass(scrollable, hideScrollButton)',
+      leftIconClass: 'computeLeftIconClass(leftHidden)',
+      rightIconClass: 'computeRightIconClass(rightHidden)',
+      tabsContentClass: 'computeTabsContentClass(scrollable)',
+      selectionBarClass: 'computeSelectionBarClass(nobar, alignBottom)'
     },
 
     listeners: {
       'core-resize': 'resizeHandler'
     },
-
-    step: 10,
-
-    holdDelay: 1,
 
     configure: function() {
       return {
@@ -294,7 +293,9 @@ Example:
         scrollable: false,
         disableDrag: false,
         hideScrollButton: false,
-        alignBottom: false
+        alignBottom: false,
+        step: 10,
+        holdDelay: 1
       };
     },
 
@@ -316,13 +317,29 @@ Example:
       this.resizableDetached();
     },
 
-    computeHideScrollButtons: function(scrollable, hideScrollButton) {
-      return !this.scrollable || this.hideScrollButton;
+    computeScrollButtonClass: function(scrollable, hideScrollButton) {
+      return (!this.scrollable || this.hideScrollButton) ? 'hidden' : 'scroll-button';
+    },
+
+    computeLeftIconClass: function(leftHidden) {
+      if (leftHidden) {
+        return 'hide';
+      }
+    },
+
+    computeRightIconClass: function(rightHidden) {
+      if (rightHidden) {
+        return 'hide';
+      }
     },
 
     computeTabsContentClass: function(scrollable) {
-      if (!scrollable) {
-        return 'horizontal layout';
+      return scrollable ? 'scrollable' : 'horizontal layout';
+    },
+
+    computeSelectionBarClass: function(nobar, alignBottom) {
+      if (!nobar && alignBottom) {
+        return 'align-bottom';
       }
     },
 
