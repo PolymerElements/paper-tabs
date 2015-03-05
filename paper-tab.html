@@ -87,7 +87,7 @@ Example:
 
     <div class="tab-content flex auto center-center horizontal layout"><content></content></div>
 
-    <paper-ripple id="ink" initialOpacity="0.95" opacityDecayVelocity="0.98" fit></paper-ripple>
+    <paper-ripple id="ink" initialOpacity="0.95" opacityDecayVelocity="0.98"></paper-ripple>
 
   </template>
 
@@ -99,7 +99,8 @@ Example:
 
     is: 'paper-tab',
 
-    published: {
+    properties: {
+
       /**
        * If true, ink ripple effect is disabled.
        *
@@ -107,29 +108,27 @@ Example:
        * @type Boolean
        * @default false
        */
-      noink: Boolean
+      noink: {
+        type: Boolean,
+        value: false
+      }
+
     },
 
     listeners: {
-      mousedown: 'downAction',
-      mouseup: 'upAction'
+      mousedown: 'onDown',
+      mouseup: 'onUp'
     },
 
-    configure: function() {
-      return {
-        noink: false
-      };
-    },
-
-    downAction: function(e) {
-      var parent = this.lightDom.elementParent(this);
+    onDown: function(e) {
+      var parent = Polymer.dom.elementParent(this);
       if (this.noink || (parent && parent.noink)) {
         return;
       }
       this.$.ink.mousedownAction(e);
     },
 
-    upAction: function() {
+    onUp: function() {
       this.$.ink.mouseupAction();
     },
 

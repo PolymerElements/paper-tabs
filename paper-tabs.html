@@ -66,12 +66,12 @@ Example:
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../layout/layout.html">
 
-<link rel="import" href="paper-tabs-icons.html">
 <link rel="import" href="paper-tab.html">
+<link rel="import" href="paper-tabs-icons.html">
 
-<link rel="import" href="../core-selector/core-selector.html">
 <link rel="import" href="../core-icon/core-icon.html">
 <link rel="import" href="../core-resizable/core-resizable.html">
+<link rel="import" href="../core-selector/core-selector.html">
 
 <dom-module id="paper-tabs">
 
@@ -159,21 +159,29 @@ Example:
 
   <template>
 
-    <div class$="[[scrollButtonClass]]">
-      <core-icon icon="paper-tabs:chevron-left" class$="[[leftIconClass]]" on-mousedown="holdLeft" on-mouseup="releaseHold"></core-icon>
+    <div class-name="[[scrollButtonClass]]">
+      <core-icon icon="paper-tabs:chevron-left" class-name="[[leftIconClass]]"
+          on-mousedown="onLeftScrollButtonDown" on-mouseup="onScrollButtonUp"></core-icon>
     </div>
 
     <div id="tabsContainer" class="flex" on-scroll="scroll" on-trackstart="trackStart">
 
-      <core-selector id="tabsContent" class$="[[tabsContentClass]]" selected="{{selected}}" selected-item="{{tab}}" attr-for-selected="[[attrForSelected]]" selectable="paper-tab">
+      <core-selector id="tabsContent" class-name="[[tabsContentClass]]"
+          selected="{{selected}}" selected-item="{{tab}}"
+          attr-for-selected="[[attrForSelected]]" selectable="paper-tab">
+
         <content select="*"></content>
-        <div id="selectionBar" class$="[[selectionBarClass]]" on-transitionend="barTransitionEnd"></div>
+
+        <div id="selectionBar" class-name="[[selectionBarClass]]"
+            on-transitionend="onBarTransitionEnd"></div>
+
       </core-selector>
 
     </div>
 
-    <div class$="[[scrollButtonClass]]">
-      <core-icon icon="paper-tabs:chevron-right" class$="[[rightIconClass]]" on-mousedown="holdRight" on-mouseup="releaseHold"></core-icon>
+    <div class-name="[[scrollButtonClass]]">
+      <core-icon icon="paper-tabs:chevron-right" class-name="[[rightIconClass]]"
+          on-mousedown="onRightScrollButtonDown" on-mouseup="onScrollButtonUp"></core-icon>
     </div>
 
   </template>
@@ -190,7 +198,7 @@ Example:
       'core-resizable'
     ],
 
-    published: {
+    properties: {
 
       /**
        * If you want to use the attribute value of the tab element for `selected` instead of the
@@ -220,7 +228,10 @@ Example:
        * @type Boolean
        * @default false
        */
-      noink: Boolean,
+      noink: {
+        type: Boolean,
+        value: false
+      },
 
       /**
        * If true, the bottom bar to indicate the selected tab will not be shown.
@@ -229,7 +240,10 @@ Example:
        * @type Boolean
        * @default false
        */
-      nobar: Boolean,
+      nobar: {
+        type: Boolean,
+        value: false
+      },
 
       /**
        * If true, the slide effect for the bottom bar is disabled.
@@ -238,7 +252,10 @@ Example:
        * @type Boolean
        * @default false
        */
-      noslide: Boolean,
+      noslide: {
+        type: Boolean,
+        value: false
+      },
 
       /**
        * If true, tabs are scrollable and the tab width is based on the label width.
@@ -247,7 +264,10 @@ Example:
        * @type Boolean
        * @default false
        */
-      scrollable: Boolean,
+      scrollable: {
+        type: Boolean,
+        value: false
+      },
 
       /**
        * If true, dragging on the tabs to scroll is disabled.
@@ -256,7 +276,10 @@ Example:
        * @type Boolean
        * @default false
        */
-      disableDrag: Boolean,
+      disableDrag: {
+        type: Boolean,
+        value: false
+      },
 
       /**
        * If true, scroll buttons (left/right arrow) will be hidden for scrollable tabs.
@@ -265,7 +288,10 @@ Example:
        * @type Boolean
        * @default false
        */
-      hideScrollButton: Boolean,
+      hideScrollButton: {
+        type: Boolean,
+        value: false
+      },
 
       /**
        * If true, the tabs are aligned to bottom (the selection bar appears at the top).
@@ -274,46 +300,55 @@ Example:
        @type Boolean
        @default false
        */
-      alignBottom: Boolean
+      alignBottom: {
+        type: Boolean,
+        value: false
+      },
 
-    },
+      step: {
+        value: 10
+      },
 
-    bind: {
-      tab: 'tabChanged'
-    },
+      holdDelay: {
+        value: 1
+      },
 
-    computed: {
-      scrollButtonClass: 'computeScrollButtonClass(scrollable, hideScrollButton)',
-      leftIconClass: 'computeLeftIconClass(leftHidden)',
-      rightIconClass: 'computeRightIconClass(rightHidden)',
-      tabsContentClass: 'computeTabsContentClass(scrollable)',
-      selectionBarClass: 'computeSelectionBarClass(nobar, alignBottom)'
+      tab: {
+        observer: 'tabChanged'
+      },
+
+      scrollButtonClass: {
+       computed: 'computeScrollButtonClass(scrollable, hideScrollButton)'
+      },
+
+      leftIconClass: {
+        computed: 'computeIconClass(leftHidden)'
+      },
+
+      rightIconClass: {
+        computed: 'computeIconClass(rightHidden)'
+      },
+
+      tabsContentClass: {
+        computed: 'computeTabsContentClass(scrollable)'
+      },
+
+      selectionBarClass: {
+        computed: 'computeSelectionBarClass(nobar, alignBottom)'
+      }
+
     },
 
     listeners: {
-      'core-resize': 'resizeHandler'
-    },
-
-    configure: function() {
-      return {
-        noink: false,
-        nobar: false,
-        noslide: false,
-        scrollable: false,
-        disableDrag: false,
-        hideScrollButton: false,
-        alignBottom: false,
-        step: 10,
-        holdDelay: 1
-      };
+      'core-resize': 'onResize'
     },
 
     ready: function() {
       //this._trackxHandler = this.trackx.bind(this);
       //Polymer.addEventListener(this.$.tabsContainer, 'trackx', this._trackxHandler);
-      this._tabsObserver = new MutationObserver(this.resizeHandler.bind(this));
-      this._tabsObserver.observe(this, {childList: true, subtree: true, characterData: true});
-      this.resizeHandler();
+      //this._tabsObserver = new MutationObserver(this.onResize.bind(this));
+      //this._tabsObserver.observe(this, {childList: true, subtree: true, characterData: true});
+      this.onResize();
     },
 
     attached: function() {
@@ -322,7 +357,7 @@ Example:
 
     detached: function() {
       //Polymer.removeEventListener(this.$.tabsContainer, 'trackx', this._trackxHandler);
-      this._tabsObserver.disconnect();
+      //this._tabsObserver.disconnect();
       this.resizableDetached();
     },
 
@@ -330,14 +365,8 @@ Example:
       return (!this.scrollable || this.hideScrollButton) ? 'hidden' : 'scroll-button';
     },
 
-    computeLeftIconClass: function(leftHidden) {
-      if (leftHidden) {
-        return 'hide';
-      }
-    },
-
-    computeRightIconClass: function(rightHidden) {
-      if (rightHidden) {
+    computeIconClass: function(hidden) {
+      if (hidden) {
         return 'hide';
       }
     },
@@ -373,11 +402,11 @@ Example:
       this.$.tabsContainer.scrollLeft = this._startx - e.dx;
     },
 
-    resizeHandler: function() {
-      this.debounce('resizeJob', this._resizeHandler, 10);
+    onResize: function() {
+      this.debounce('resizeJob', this.resizeHandler, 10);
     },
 
-    _resizeHandler: function() {
+    resizeHandler: function() {
       this.scroll();
       this._tabEffector();
     },
@@ -392,15 +421,15 @@ Example:
       this.rightHidden = l === Math.max(0, (tc.scrollWidth - tc.clientWidth));
     },
 
-    holdLeft: function() {
+    onLeftScrollButtonDown: function() {
       this._holdJob = setInterval(this.scrollToLeft.bind(this), this.holdDelay);
     },
 
-    holdRight: function() {
+    onRightScrollButtonDown: function() {
       this._holdJob = setInterval(this.scrollToRight.bind(this), this.holdDelay);
     },
 
-    releaseHold: function() {
+    onScrollButtonUp: function() {
       clearInterval(this._holdJob);
       this._holdJob = null;
     },
@@ -421,7 +450,6 @@ Example:
 
       var r = this.$.tabsContent.getBoundingClientRect();
       var w = r.width;
-
       var tabRect = tab.getBoundingClientRect();
       var tabOffsetLeft = tabRect.left - r.left;
 
@@ -431,6 +459,7 @@ Example:
       };
 
       if (this.noslide || old == null) {
+        // position bar directly without animation
         this.positionBar(this._pos.width, this._pos.left);
         return;
       }
@@ -440,8 +469,8 @@ Example:
       var index = this.$.tabsContent.indexOf(tab);
       var m = 5;
 
+      // bar animation: expand
       this.$.selectionBar.classList.add('expand');
-
       if (oldIndex < index) {
         this.positionBar(this.calcPercent(tabRect.left + tabRect.width - oldRect.left, w) - m,
             this._left);
@@ -478,12 +507,14 @@ Example:
           'translate3d(' + left + '%, 0, 0) scaleX(' + (width / 100) + ')');
     },
 
-    barTransitionEnd: function(e) {
+    onBarTransitionEnd: function(e) {
       var cl = this.$.selectionBar.classList;
+      // bar animation: expand -> contract
       if (cl.contains('expand')) {
         cl.remove('expand');
         cl.add('contract');
         this.positionBar(this._pos.width, this._pos.left);
+      // bar animation done
       } else if (cl.contains('contract')) {
         cl.remove('contract');
       }
