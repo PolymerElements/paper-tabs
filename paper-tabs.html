@@ -65,6 +65,7 @@ Example:
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../layout/layout.html">
+<link rel="import" href="../layout/shadow-layout.html">
 
 <link rel="import" href="paper-tab.html">
 <link rel="import" href="paper-tabs-icons.html">
@@ -77,7 +78,7 @@ Example:
 
   <style>
 
-    paper-tabs {
+    :host {
       display: -ms-flexbox;
       display: -webkit-flex;
       display: flex;
@@ -95,33 +96,33 @@ Example:
       -webkit-tap-highlight-color: rgba(0,0,0,0);
     }
 
-    paper-tabs #tabsContainer {
+    #tabsContainer {
       position: relative;
       height: 100%;
       white-space: nowrap;
       overflow: hidden;
     }
 
-    paper-tabs #tabsContent {
+    #tabsContent {
       height: 100%;
     }
 
-    paper-tabs #tabsContent.scrollable {
+    #tabsContent.scrollable {
       position: absolute;
       white-space: nowrap;
     }
 
-    paper-tabs .scroll-button {
+    .scroll-button {
       width: 24px;
       padding: 16px;
     }
 
-    paper-tabs .scroll-button > .hide {
+    .scroll-button > .hide {
       display: inline-block;
       opacity: 0;
     }
 
-    paper-tabs #selectionBar {
+    #selectionBar {
       position: absolute;
       height: 2px;
       bottom: 0;
@@ -136,22 +137,22 @@ Example:
       transition: transform;
     }
 
-    paper-tabs #selectionBar.align-bottom {
+    #selectionBar.align-bottom {
       top: 0;
       bottom: auto;
     }
 
-    paper-tabs #selectionBar.expand {
+    #selectionBar.expand {
       transition-duration: 0.15s;
       transition-timing-function: cubic-bezier(0.4, 0.0, 1, 1);
     }
 
-    paper-tabs #selectionBar.contract {
+    #selectionBar.contract {
       transition-duration: 0.18s;
       transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
     }
 
-    paper-tabs #tabsContent > *:not(#selectionBar) {
+    #tabsContent > ::content > *:not(#selectionBar) {
       height: 100%;
     }
 

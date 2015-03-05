@@ -26,13 +26,14 @@ Example:
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../layout/layout.html">
+<link rel="import" href="../layout/shadow-layout.html">
 <link rel="import" href="../paper-ripple/paper-ripple.html">
 
 <dom-module id="paper-tab">
 
   <style>
 
-    paper-tab {
+    :host {
       display: -ms-inline-flexbox;
       display: -webkit-inline-flex;
       display: inline-flex;
@@ -51,27 +52,27 @@ Example:
       cursor: default;
     }
 
-    paper-tab[link] {
+    :host([link]) {
       padding: 0;
     }
 
-    paper-tab .tab-content {
+    .tab-content {
       height: 100%;
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
       transition: opacity 0.1s cubic-bezier(0.4, 0.0, 1, 1);
     }
 
-    paper-tab:not(.core-selected) .tab-content {
+    :host(:not(.core-selected)) > .tab-content {
       opacity: 0.6;
     }
 
-    paper-tab #ink {
+    #ink {
       color: #ffff8d;
       pointer-events: none;
     }
 
-    paper-tab .tab-content a {
+    .tab-content > ::content > a {
       height: 100%;
       /* flex */
       -ms-flex: 1 1 0.000000001px;
@@ -87,7 +88,7 @@ Example:
 
     <div class="tab-content flex auto center-center horizontal layout"><content></content></div>
 
-    <paper-ripple id="ink" initialOpacity="0.95" opacityDecayVelocity="0.98"></paper-ripple>
+    <paper-ripple id="ink" initial-opacity="0.95" opacity-decay-velocity="0.98"></paper-ripple>
 
   </template>
 
