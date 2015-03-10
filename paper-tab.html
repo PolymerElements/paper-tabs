@@ -122,7 +122,7 @@ Example:
     },
 
     onDown: function(e) {
-      var parent = Polymer.dom.elementParent(this);
+      var parent = Polymer.dom(this).elementParent;
       if (this.noink || (parent && parent.noink)) {
         return;
       }
