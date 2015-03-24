@@ -160,28 +160,28 @@ Example:
 
   <template>
 
-    <div class-name="[[scrollButtonClass]]">
-      <core-icon icon="paper-tabs:chevron-left" class-name="[[leftIconClass]]"
+    <div class$="[[computeScrollButtonClass(scrollable, hideScrollButton)]]">
+      <core-icon icon="paper-tabs:chevron-left" class$="[[computeIconClass(leftHidden)]]"
           on-mousedown="onLeftScrollButtonDown" on-mouseup="onScrollButtonUp"></core-icon>
     </div>
 
     <div id="tabsContainer" class="flex" on-scroll="scroll" on-trackstart="trackStart">
 
-      <core-selector id="tabsContent" class-name="[[tabsContentClass]]"
+      <core-selector id="tabsContent" class$="[[computeTabsContentClass(scrollable)]]"
           selected="{{selected}}" selected-item="{{tab}}"
           attr-for-selected="[[attrForSelected]]" selectable="paper-tab">
 
         <content select="*"></content>
 
-        <div id="selectionBar" class-name="[[selectionBarClass]]"
+        <div id="selectionBar" class$="[[computeSelectionBarClass(nobar, alignBottom)]]"
             on-transitionend="onBarTransitionEnd"></div>
 
       </core-selector>
 
     </div>
 
-    <div class-name="[[scrollButtonClass]]">
-      <core-icon icon="paper-tabs:chevron-right" class-name="[[rightIconClass]]"
+    <div class$="[[computeScrollButtonClass(scrollable, hideScrollButton)]]">
+      <core-icon icon="paper-tabs:chevron-right" class$="[[computeIconClass(rightHidden)]]"
           on-mousedown="onRightScrollButtonDown" on-mouseup="onScrollButtonUp"></core-icon>
     </div>
 
@@ -316,26 +316,6 @@ Example:
 
       tab: {
         observer: 'tabChanged'
-      },
-
-      scrollButtonClass: {
-       computed: 'computeScrollButtonClass(scrollable, hideScrollButton)'
-      },
-
-      leftIconClass: {
-        computed: 'computeIconClass(leftHidden)'
-      },
-
-      rightIconClass: {
-        computed: 'computeIconClass(rightHidden)'
-      },
-
-      tabsContentClass: {
-        computed: 'computeTabsContentClass(scrollable)'
-      },
-
-      selectionBarClass: {
-        computed: 'computeSelectionBarClass(nobar, alignBottom)'
       }
 
     },
