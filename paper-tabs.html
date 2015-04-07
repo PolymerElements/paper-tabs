@@ -159,7 +159,7 @@ Example:
 
   <template>
 
-    <div class$="[[computeScrollButtonClass(scrollable, hideScrollButton)]]">
+    <div hidden$="[[computeScrollButtonHidden(scrollable, hideScrollButton)]]">
       <core-icon icon="paper-tabs:chevron-left" class$="[[computeIconClass(leftHidden)]]"
           on-mousedown="onLeftScrollButtonDown" on-mouseup="onScrollButtonUp"></core-icon>
     </div>
@@ -179,7 +179,7 @@ Example:
 
     </div>
 
-    <div class$="[[computeScrollButtonClass(scrollable, hideScrollButton)]]">
+    <div hidden$="[[computeScrollButtonHidden(scrollable, hideScrollButton)]]">
       <core-icon icon="paper-tabs:chevron-right" class$="[[computeIconClass(rightHidden)]]"
           on-mousedown="onRightScrollButtonDown" on-mouseup="onScrollButtonUp"></core-icon>
     </div>
@@ -341,8 +341,8 @@ Example:
       this.resizableDetached();
     },
 
-    computeScrollButtonClass: function(scrollable, hideScrollButton) {
-      return (!this.scrollable || this.hideScrollButton) ? 'hidden' : 'scroll-button';
+    computeScrollButtonHidden: function(scrollable, hideScrollButton) {
+      return !this.scrollable || this.hideScrollButton;
     },
 
     computeIconClass: function(hidden) {
