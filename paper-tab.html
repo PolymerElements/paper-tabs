@@ -25,8 +25,8 @@ Example:
 -->
 
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../layout/layout.html">
-<link rel="import" href="../layout/shadow-layout.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<!-- <link rel="import" href="../iron-flex-layout/shadow-layout.html"> -->
 <link rel="import" href="../paper-ripple/paper-ripple.html">
 
 <dom-module id="paper-tab">
@@ -63,7 +63,7 @@ Example:
       transition: opacity 0.1s cubic-bezier(0.4, 0.0, 1, 1);
     }
 
-    :host(:not(.core-selected)) > .tab-content {
+    :host(:not(.iron-selected)) > .tab-content {
       opacity: 0.6;
     }
 
