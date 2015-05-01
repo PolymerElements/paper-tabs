@@ -1,4 +1,5 @@
 <!--
+@license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
@@ -25,8 +26,8 @@ Example:
 -->
 
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
-<!-- <link rel="import" href="../iron-flex-layout/shadow-layout.html"> -->
 <link rel="import" href="../paper-ripple/paper-ripple.html">
 
 <dom-module id="paper-tab">
@@ -34,22 +35,17 @@ Example:
   <style>
 
     :host {
-      display: -ms-inline-flexbox;
-      display: -webkit-inline-flex;
-      display: inline-flex;
-      -ms-flex-pack: center;
-      -webkit-justify-content: center;
-      justify-content: center;
-      -ms-flex-align: center;
-      -webkit-align-items: center;
-      align-items: center;
-      -ms-flex: 1;
-      -webkit-flex: 1;
-      flex: 1;
+      mixin(--layout-inline);
+      mixin(--layout-center);
+      mixin(--layout-center-justified);
+      mixin(--layout-flex);
+
       position: relative;
       padding: 0 12px;
       overflow: hidden;
       cursor: default;
+
+      mixin(--paper-tab);
     }
 
     :host([link]) {
@@ -61,6 +57,8 @@ Example:
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
       transition: opacity 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+
+      mixin(--paper-tab-content);
     }
 
     :host(:not(.iron-selected)) > .tab-content {
@@ -86,9 +84,13 @@ Example:
 
   <template>
 
-    <div class="tab-content flex auto center-center horizontal layout"><content></content></div>
+    <div class="tab-content flex auto center-center horizontal layout">
+      <content></content>
+    </div>
 
-    <paper-ripple id="ink" initial-opacity="0.95" opacity-decay-velocity="0.98"></paper-ripple>
+    <template is="x-if" if="{{!noink}}">
+      <paper-ripple id="ink" initial-opacity="0.95" opacity-decay-velocity="0.98"></paper-ripple>
+    </template>
 
   </template>
 
@@ -99,6 +101,8 @@ Example:
   Polymer({
 
     is: 'paper-tab',
+
+    enableCustomStyleProperties: true,
 
     properties: {
 
@@ -117,26 +121,17 @@ Example:
     },
 
     listeners: {
-      mousedown: 'onDown',
-      mouseup: 'onUp'
+      mousedown: '_onDown'
     },
 
-    onDown: function(e) {
-      var parent = Polymer.dom(this).elementParent;
-      if (this.noink || (parent && parent.noink)) {
-        return;
-      }
-      this.$.ink.mousedownAction(e);
+    get _parentNoink () {
+      var parent = Polymer.dom(this).parentNode;
+      return !!parent && !!parent.noink;
     },
 
-    onUp: function() {
-      this.$.ink.mouseupAction();
-    },
-
-    cancelRipple: function() {
-      this.$.ink.mouseupAction();
+    _onDown: function(e) {
+      this.noink = !!this.noink || !!this._parentNoink;
     }
-
   });
 
 </script>

@@ -1,5 +1,6 @@
 <!doctype html>
 <!--
+@license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
@@ -13,7 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <title>paper-tabs-basic</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
@@ -55,9 +56,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.equal(tabs.selected, undefined);
         });
 
-        test('no tabs have core-selected class', function() {
+        test('no tabs have iron-selected class', function() {
           Array.prototype.forEach.call(tabs.querySelectorAll('paper-tab'), function(tab) {
-            assert.isFalse(tab.classList.contains('core-selected'));
+            assert.isFalse(tab.classList.contains('iron-selected'));
           });
         });
 
@@ -104,9 +105,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.equal(tabs.selected, index);
         });
 
-        test('selected tab has core-selected class', function() {
+        test('selected tab has iron-selected class', function() {
           var tab = tabs.querySelectorAll('paper-tab')[index];
-          assert.isTrue(tab.classList.contains('core-selected'));
+          assert.isTrue(tab.classList.contains('iron-selected'));
         });
 
         test('selected tab has selection bar position at the bottom of the tab', function(done) {
@@ -132,9 +133,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.equal(tabs.selected, index);
         });
 
-        test('selected tab has core-selected class', function() {
+        test('selected tab has iron-selected class', function() {
           var tab = tabs.querySelectorAll('paper-tab')[index];
-          assert.isTrue(tab.classList.contains('core-selected'));
+          assert.isTrue(tab.classList.contains('iron-selected'));
         });
 
         test('selected tab has selection bar position at the bottom of the tab', function(done) {
