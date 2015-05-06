@@ -60,8 +60,6 @@ Example:
 
 @group Paper Elements
 @element paper-tabs
-@mixins Polymer.CoreResizable https://github.com/polymer/core-resizable
-@homepage github.io
 -->
 
 <link rel="import" href="../polymer/polymer.html">
@@ -80,8 +78,8 @@ Example:
   <style>
 
     :host {
-      mixin(--layout);
-      mixin(--layout-center);
+      @apply(--layout);
+      @apply(--layout-center);
 
       height: 48px;
       font-size: 14px;
@@ -93,7 +91,7 @@ Example:
       user-select: none;
       -webkit-tap-highlight-color: rgba(0,0,0,0);
 
-      mixin(--paper-tabs);
+      @apply(--paper-tabs);
     }
 
     #tabsContainer {
@@ -140,7 +138,7 @@ Example:
       transition: -webkit-transform;
       transition: transform;
 
-      mixin(--paper-tabs-selection-bar);
+      @apply(--paper-tabs-selection-bar);
     }
 
     #selectionBar.align-bottom {
@@ -200,8 +198,6 @@ Example:
   Polymer({
 
     is: 'paper-tabs',
-
-    enableCustomStyleProperties: true,
 
     behaviors: [
       Polymer.IronResizableBehavior

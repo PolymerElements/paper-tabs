@@ -35,17 +35,17 @@ Example:
   <style>
 
     :host {
-      mixin(--layout-inline);
-      mixin(--layout-center);
-      mixin(--layout-center-justified);
-      mixin(--layout-flex);
+      @apply(--layout-inline);
+      @apply(--layout-center);
+      @apply(--layout-center-justified);
+      @apply(--layout-flex);
 
       position: relative;
       padding: 0 12px;
       overflow: hidden;
       cursor: default;
 
-      mixin(--paper-tab);
+      @apply(--paper-tab);
     }
 
     :host([link]) {
@@ -58,7 +58,7 @@ Example:
       transform: translateZ(0);
       transition: opacity 0.1s cubic-bezier(0.4, 0.0, 1, 1);
 
-      mixin(--paper-tab-content);
+      @apply(--paper-tab-content);
     }
 
     :host(:not(.iron-selected)) > .tab-content {
@@ -88,7 +88,7 @@ Example:
       <content></content>
     </div>
 
-    <template is="x-if" if="{{!noink}}">
+    <template is="dom-if" if="{{!noink}}">
       <paper-ripple id="ink" initial-opacity="0.95" opacity-decay-velocity="0.98"></paper-ripple>
     </template>
 
@@ -101,8 +101,6 @@ Example:
   Polymer({
 
     is: 'paper-tab',
-
-    enableCustomStyleProperties: true,
 
     properties: {
 
