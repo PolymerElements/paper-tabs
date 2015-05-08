@@ -446,8 +446,9 @@ Example:
     _positionBar: function(width, left) {
       this._width = width;
       this._left = left;
-      this.transform(this.$.selectionBar,
-          'translate3d(' + left + '%, 0, 0) scaleX(' + (width / 100) + ')');
+      this.transform(
+          'translate3d(' + left + '%, 0, 0) scaleX(' + (width / 100) + ')',
+          this.$.selectionBar);
     },
 
     _onBarTransitionEnd: function(e) {
