@@ -166,10 +166,10 @@ Example:
 
     <div hidden$="[[_computeScrollButtonHidden(scrollable, hideScrollButton)]]">
       <iron-icon icon="paper-tabs:chevron-left" class$="[[_computeIconClass(leftHidden)]]"
-          on-mousedown="_onLeftScrollButtonDown" on-mouseup="_onScrollButtonUp"></iron-icon>
+          on-down="_onLeftScrollButtonDown" on-up="_onScrollButtonUp"></iron-icon>
     </div>
 
-    <div id="tabsContainer" class="flex" on-scroll="scroll" on-trackstart="trackStart">
+    <div id="tabsContainer" class="flex" on-scroll="_scroll">
 
       <iron-selector id="tabsContent" class$="[[_computeTabsContentClass(scrollable)]]"
           selected="{{selected}}" selected-item="{{_tab}}"
@@ -186,7 +186,7 @@ Example:
 
     <div hidden$="[[_computeScrollButtonHidden(scrollable, hideScrollButton)]]">
       <iron-icon icon="paper-tabs:chevron-right" class$="[[_computeIconClass(rightHidden)]]"
-          on-mousedown="_onRightScrollButtonDown" on-mouseup="_onScrollButtonUp"></iron-icon>
+          on-down="_onRightScrollButtonDown" on-up="_onScrollButtonUp"></iron-icon>
     </div>
 
   </template>
