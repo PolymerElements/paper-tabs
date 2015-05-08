@@ -158,5 +158,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     </paper-tabs>
 
+    <h3>I. Bound Selection</h3>
+
+    <template is="dom-bind">
+      <h2>Current Tab: <span>[[selected]]</span></h2>
+      <paper-tabs selected="{{selected}}">
+
+        <paper-tab>ITEM ONE</paper-tab>
+        <paper-tab>ITEM TWO</paper-tab>
+        <paper-tab>ITEM THREE</paper-tab>
+
+      </paper-tabs>
+    </dom>
+
   </body>
 </html>
