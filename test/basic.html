@@ -90,6 +90,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           assert.equal(tabs.alignBottom, false);
         });
 
+        test('has role tablist', function() {
+          assert.equal(tabs.getAttribute('role'), 'tablist');
+        });
+
       });
 
       suite('set the selected attribute', function() {
