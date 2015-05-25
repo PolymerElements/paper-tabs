@@ -8,6 +8,12 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-behaviors/iron-control-state.html">
+<link rel="import" href="../paper-ripple/paper-ripple.html">
+
 <!--
 `paper-tab` is styled to look like a tab.  It should be used in conjunction with
 `paper-tabs`.
@@ -25,11 +31,6 @@ Example:
 @homepage github.io
 -->
 
-<link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
-<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../paper-ripple/paper-ripple.html">
-
 <dom-module id="paper-tab">
 
   <style>
@@ -43,9 +44,13 @@ Example:
       position: relative;
       padding: 0 12px;
       overflow: hidden;
-      cursor: default;
+      cursor: pointer;
 
       @apply(--paper-tab);
+    }
+
+    :host(:focus) {
+      outline: none;
     }
 
     :host([link]) {
@@ -63,6 +68,11 @@ Example:
 
     :host(:not(.iron-selected)) > .tab-content {
       opacity: 0.6;
+    }
+
+    :host(:focus) .tab-content {
+      opacity: 1;
+      font-weight: 700;
     }
 
     #ink {
@@ -88,7 +98,7 @@ Example:
       <content></content>
     </div>
 
-    <template is="dom-if" if="{{!noink}}">
+    <template is="dom-if" if="[[!noink]]">
       <paper-ripple id="ink" initial-opacity="0.95" opacity-decay-velocity="0.98"></paper-ripple>
     </template>
 
@@ -102,6 +112,10 @@ Example:
 
     is: 'paper-tab',
 
+    behaviors: [
+      Polymer.IronControlState
+    ],
+
     properties: {
 
       /**
@@ -114,6 +128,10 @@ Example:
         value: false
       }
 
+    },
+
+    hostAttributes: {
+      role: 'tab'
     },
 
     listeners: {

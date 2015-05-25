@@ -8,6 +8,14 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../iron-menu-behavior/iron-menubar-behavior.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="paper-tabs-icons.html">
+
 <!--
 `paper-tabs` makes it easy to explore and switch between different views or functional aspects of
 an app, or to browse categorized data sets.
@@ -57,21 +65,7 @@ Example:
         <a href="#link3" class="horizontal center-center layout">TAB THREE</a>
       </paper-tab>
     </paper-tabs>
-
-@group Paper Elements
-@element paper-tabs
 -->
-
-<link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
-
-<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
-<link rel="import" href="../iron-selector/iron-selector.html">
-
-<link rel="import" href="../iron-icon/iron-icon.html">
-
-<link rel="import" href="paper-tabs-icons.html">
 
 <dom-module id="paper-tabs">
 
@@ -171,16 +165,14 @@ Example:
 
     <div id="tabsContainer" class="flex" on-scroll="_scroll">
 
-      <iron-selector id="tabsContent" class$="[[_computeTabsContentClass(scrollable)]]"
-          selected="{{selected}}" selected-item="{{_tab}}"
-          attr-for-selected="[[attrForSelected]]" selectable="paper-tab">
+      <div id="tabsContent" class$="[[_computeTabsContentClass(scrollable)]]">
 
         <content select="*"></content>
 
         <div id="selectionBar" class$="[[_computeSelectionBarClass(nobar, alignBottom)]]"
             on-transitionend="_onBarTransitionEnd"></div>
 
-      </iron-selector>
+      </div>
 
     </div>
 
@@ -200,7 +192,8 @@ Example:
     is: 'paper-tabs',
 
     behaviors: [
-      Polymer.IronResizableBehavior
+      Polymer.IronResizableBehavior,
+      Polymer.IronMenubarBehavior
     ],
 
     properties: {
@@ -285,23 +278,31 @@ Example:
         notify: true
       },
 
+      selectable: {
+        type: String,
+        value: 'paper-tab'
+      },
+
       _step: {
         value: 10
       },
 
       _holdDelay: {
         value: 1
-      },
-
-      _tab: {
-        observer: '_tabChanged'
       }
+    },
 
+    hostAttributes: {
+      role: 'tablist'
     },
 
     listeners: {
       'iron-resize': '_onResize'
     },
+
+    observers: [
+      '_tabChanged(selectedItem)'
+    ],
 
     attached: function() {
       this.notifyResize();
@@ -334,7 +335,7 @@ Example:
     _onResize: function() {
       this.debounce('_onResize', function() {
         this._scroll();
-        this._tabChanged(this._tab);
+        this._tabChanged(this.selectedItem);
       }, 10);
     },
 
