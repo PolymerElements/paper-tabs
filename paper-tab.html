@@ -25,10 +25,6 @@ Example:
       <paper-tab>TAB 2</paper-tab>
       <paper-tab>TAB 3</paper-tab>
     </paper-tabs>
-
-@group Paper Elements
-@element paper-tab
-@homepage github.io
 -->
 
 <dom-module id="paper-tab">
@@ -67,7 +63,7 @@ Example:
     }
 
     :host(:not(.iron-selected)) > .tab-content {
-      opacity: 0.6;
+      opacity: 0.8;
     }
 
     :host(:focus) .tab-content {
@@ -76,7 +72,7 @@ Example:
     }
 
     #ink {
-      color: #ffff8d;
+      color: var(--paper-tab-ink, --paper-yellow-a100);
       pointer-events: none;
     }
 
