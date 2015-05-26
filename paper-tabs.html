@@ -14,6 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="../iron-menu-behavior/iron-menubar-behavior.html">
 <link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-styles/color.html">
 <link rel="import" href="paper-tabs-icons.html">
 <link rel="import" href="paper-tab.html">
@@ -109,18 +110,17 @@ Example:
       white-space: nowrap;
     }
 
-    .scroll-button {
-      width: 24px;
-      padding: 16px;
-    }
-
     .hidden {
       display: none;
     }
 
-    .scroll-button > .hide {
-      display: inline-block;
+    .not-visible {
       opacity: 0;
+    }
+
+    paper-icon-button {
+      width: 24px;
+      padding: 16px;
     }
 
     #selectionBar {
@@ -163,10 +163,7 @@ Example:
 
   <template>
 
-    <div hidden$="[[_computeScrollButtonHidden(scrollable, hideScrollButton)]]">
-      <iron-icon icon="paper-tabs:chevron-left" class$="[[_computeIconClass(leftHidden)]]"
-          on-down="_onLeftScrollButtonDown" on-up="_onScrollButtonUp"></iron-icon>
-    </div>
+    <paper-icon-button icon="paper-tabs:chevron-left" class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown"></paper-icon-button>
 
     <div id="tabsContainer" class="flex" on-scroll="_scroll">
 
@@ -174,17 +171,14 @@ Example:
 
         <content select="*"></content>
 
-        <div id="selectionBar" class$="[[_computeSelectionBarClass(nobar, alignBottom)]]"
+        <div id="selectionBar" class$="[[_computeSelectionBarClass(noBar, alignBottom)]]"
             on-transitionend="_onBarTransitionEnd"></div>
 
       </div>
 
     </div>
 
-    <div hidden$="[[_computeScrollButtonHidden(scrollable, hideScrollButton)]]">
-      <iron-icon icon="paper-tabs:chevron-right" class$="[[_computeIconClass(rightHidden)]]"
-          on-down="_onRightScrollButtonDown" on-up="_onScrollButtonUp"></iron-icon>
-    </div>
+    <paper-icon-button icon="paper-tabs:chevron-right" class$="[[_computeScrollButtonClass(_rightHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onRightScrollButtonDown"></paper-icon-button>
 
   </template>
 
@@ -205,8 +199,6 @@ Example:
 
       /**
        * If true, ink ripple effect is disabled.
-       *
-       * @attribute noink
        */
       noink: {
         type: Boolean,
@@ -215,28 +207,22 @@ Example:
 
       /**
        * If true, the bottom bar to indicate the selected tab will not be shown.
-       *
-       * @attribute nobar
        */
-      nobar: {
+      noBar: {
         type: Boolean,
         value: false
       },
 
       /**
        * If true, the slide effect for the bottom bar is disabled.
-       *
-       * @attribute noslide
        */
-      noslide: {
+      noSlide: {
         type: Boolean,
         value: false
       },
 
       /**
        * If true, tabs are scrollable and the tab width is based on the label width.
-       *
-       * @attribute scrollable
        */
       scrollable: {
         type: Boolean,
@@ -245,8 +231,6 @@ Example:
 
       /**
        * If true, dragging on the tabs to scroll is disabled.
-       *
-       * @attribute disableDrag
        */
       disableDrag: {
         type: Boolean,
@@ -255,18 +239,14 @@ Example:
 
       /**
        * If true, scroll buttons (left/right arrow) will be hidden for scrollable tabs.
-       *
-       * @attribute hideScrollButton
        */
-      hideScrollButton: {
+      hideScrollButtons: {
         type: Boolean,
         value: false
       },
 
       /**
        * If true, the tabs are aligned to bottom (the selection bar appears at the top).
-       *
-       * @attribute alignBottom
        */
       alignBottom: {
         type: Boolean,
@@ -275,8 +255,6 @@ Example:
 
       /**
        * Gets or sets the selected element. The default is to use the index of the item.
-       *
-       * @attribute selected
        */
       selected: {
         type: String,
@@ -294,6 +272,20 @@ Example:
 
       _holdDelay: {
         value: 1
+      },
+
+      _leftHidden: {
+        type: Boolean,
+        value: false
+      },
+
+      _rightHidden: {
+        type: Boolean,
+        value: false
+      },
+
+      _previousTab: {
+        type: Object
       }
     },
 
@@ -302,33 +294,29 @@ Example:
     },
 
     listeners: {
-      'iron-resize': '_onResize'
+      'iron-resize': '_onResize',
+      'iron-select': '_onIronSelect',
+      'iron-deselect': '_onIronDeselect'
     },
 
-    observers: [
-      '_tabChanged(selectedItem)'
-    ],
-
-    attached: function() {
-      this.notifyResize();
-    },
-
-    _computeScrollButtonHidden: function(scrollable, hideScrollButton) {
-      return !this.scrollable || this.hideScrollButton;
-    },
-
-    _computeIconClass: function(hidden) {
-      if (hidden) {
-        return 'hide';
+    _computeScrollButtonClass: function(hideThisButton, scrollable, hideScrollButtons) {
+      if (!scrollable || hideScrollButtons) {
+        return 'hidden';
       }
+
+      if (hideThisButton) {
+        return 'not-visible';
+      }
+
+      return '';
     },
 
     _computeTabsContentClass: function(scrollable) {
       return scrollable ? 'scrollable' : 'horizontal layout';
     },
 
-    _computeSelectionBarClass: function(nobar, alignBottom) {
-      if (nobar) {
+    _computeSelectionBarClass: function(noBar, alignBottom) {
+      if (noBar) {
         return 'hidden';
       } else if (alignBottom) {
         return 'align-bottom';
@@ -344,11 +332,24 @@ Example:
       }, 10);
     },
 
+    _onIronSelect: function(event) {
+      this._tabChanged(event.detail.item, this._previousTab);
+      this._previousTab = event.detail.item;
+      this.cancelDebouncer('tab-changed');
+    },
+
+    _onIronDeselect: function(event) {
+      this.debounce('tab-changed', function() {
+        this._tabChanged(null, this._previousTab);
+      // See polymer/polymer#1305
+      }, 1);
+    },
+
     get _tabContainerScrollSize () {
       return Math.max(
         0,
         this.$.tabsContainer.scrollWidth -
-          this.$.tabsContainer.scrollHeight
+          this.$.tabsContainer.offsetWidth
       );
     },
 
@@ -361,8 +362,8 @@ Example:
 
       scrollLeft = this.$.tabsContainer.scrollLeft;
 
-      this.leftHidden = scrollLeft === 0;
-      this.rightHidden = scrollLeft === this._tabContainerScrollSize;
+      this._leftHidden = scrollLeft === 0;
+      this._rightHidden = scrollLeft === this._tabContainerScrollSize;
     },
 
     _onLeftScrollButtonDown: function() {
@@ -402,15 +403,15 @@ Example:
         left: this._calcPercent(tabOffsetLeft, w)
       };
 
-      if (this.noslide || old == null) {
+      if (this.noSlide || old == null) {
         // position bar directly without animation
         this._positionBar(this._pos.width, this._pos.left);
         return;
       }
 
       var oldRect = old.getBoundingClientRect();
-      var oldIndex = this.$.tabsContent.indexOf(old);
-      var index = this.$.tabsContent.indexOf(tab);
+      var oldIndex = this.items.indexOf(old);
+      var index = this.items.indexOf(tab);
       var m = 5;
 
       // bar animation: expand
