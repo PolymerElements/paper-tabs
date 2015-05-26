@@ -10,8 +10,8 @@
   "keywords": [
     "web-components",
     "polymer",
-    "paper",
-    "tabs"
+    "tabs",
+    "control"
   ],
   "repository": "https://github.com/Polymer/paper-tabs/tree/0.8-preview",
   "dependencies": {
