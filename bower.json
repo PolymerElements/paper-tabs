@@ -1,6 +1,6 @@
 {
   "name": "paper-tabs",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "description": "Material design tabs",
   "private": true,
   "main": "paper-tabs.html",
