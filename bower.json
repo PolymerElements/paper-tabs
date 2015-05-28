@@ -1,6 +1,7 @@
 {
   "name": "paper-tabs",
   "version": "0.9.5",
+  "license": "http://polymer.github.io/LICENSE.txt",
   "description": "Material design tabs",
   "private": true,
   "main": "paper-tabs.html",
