@@ -309,6 +309,10 @@ Custom property | Description | Default
       'iron-select': '_onIronSelect',
       'iron-deselect': '_onIronDeselect'
     },
+    
+    attached: function() { // see PolymerElements/paper-tabs#31
+	  this._tabChanged(this._previousTab, null);
+    },
 
     _computeScrollButtonClass: function(hideThisButton, scrollable, hideScrollButtons) {
       if (!scrollable || hideScrollButtons) {
