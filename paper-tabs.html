@@ -220,7 +220,8 @@ Custom property | Description | Default
        */
       noink: {
         type: Boolean,
-        value: false
+        value: false,
+        observer: '_noinkChanged'
       },
 
       /**
@@ -325,6 +326,19 @@ Custom property | Description | Default
 
     ready: function() {
       this.setScrollDirection('y', this.$.tabsContainer);
+    },
+
+    _noinkChanged: function(noink) {
+      var childTabs = Polymer.dom(this).querySelectorAll('paper-tab');
+      childTabs.forEach(noink ? this._setNoinkAttribute : this._removeNoinkAttribute);
+    },
+
+    _setNoinkAttribute: function(element) {
+      element.setAttribute('noink', '');
+    },
+
+    _removeNoinkAttribute: function(element) {
+      element.removeAttribute('noink');
     },
 
     _computeScrollButtonClass: function(hideThisButton, scrollable, hideScrollButtons) {
