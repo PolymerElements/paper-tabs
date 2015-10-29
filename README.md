@@ -12,32 +12,6 @@ Edit this file, and the bot will squash your changes :)
 _[Demo and API Docs](https://elements.polymer-project.org/elements/paper-tabs)_
 
 
-##&lt;paper-tab&gt;
-
-
-`paper-tab` is styled to look like a tab.  It should be used in conjunction with
-`paper-tabs`.
-
-Example:
-
-    <paper-tabs selected="0">
-      <paper-tab>TAB 1</paper-tab>
-      <paper-tab>TAB 2</paper-tab>
-      <paper-tab>TAB 3</paper-tab>
-    </paper-tabs>
-
-### Styling
-
-The following custom properties and mixins are available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--paper-tab-ink` | Ink color | `--paper-yellow-a100`
-`--paper-tab` | Mixin applied to the tab | `{}`
-`--paper-tab-content` | Mixin applied to the tab content | `{}`
-
-
-
 ##&lt;paper-tabs&gt;
 
 
@@ -100,5 +74,31 @@ Custom property | Description | Default
 ----------------|-------------|----------
 `--paper-tabs-selection-bar-color` | Color for the selection bar | `--paper-yellow-a100`
 `--paper-tabs` | Mixin applied to the tabs | `{}`
+
+
+
+##&lt;paper-tab&gt;
+
+
+`paper-tab` is styled to look like a tab.  It should be used in conjunction with
+`paper-tabs`.
+
+Example:
+
+    <paper-tabs selected="0">
+      <paper-tab>TAB 1</paper-tab>
+      <paper-tab>TAB 2</paper-tab>
+      <paper-tab>TAB 3</paper-tab>
+    </paper-tabs>
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-tab-ink` | Ink color | `--paper-yellow-a100`
+`--paper-tab` | Mixin applied to the tab | `{}`
+`--paper-tab-content` | Mixin applied to the tab content | `{}`
 
 
