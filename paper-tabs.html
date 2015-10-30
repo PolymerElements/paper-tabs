@@ -216,7 +216,9 @@ Custom property | Description | Default
     properties: {
 
       /**
-       * If true, ink ripple effect is disabled.
+       * If true, ink ripple effect is disabled. When this property is changed,
+       * all descendant `<paper-tab>` elements have their `noink` property
+       * changed to the new value as well.
        */
       noink: {
         type: Boolean,
