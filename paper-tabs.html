@@ -103,12 +103,10 @@ Custom property | Description | Default
       -webkit-tap-highlight-color: rgba(0,0,0,0);
 
       @apply(--paper-tabs);
-
-      display: flex;
     }
 
     :host-context([dir=rtl]) {
-      flex-direction: row-reverse;
+      @apply(--layout-horizontal-reverse);
     }
 
     #tabsContainer {
