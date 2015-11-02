@@ -315,6 +315,10 @@ Custom property | Description | Default
       'iron-deselect': '_onIronDeselect'
     },
 
+    created: function() {
+      this._holdJob = null;
+    },
+
     ready: function() {
       this.setScrollDirection('y', this.$.tabsContainer);
     },
