@@ -13,6 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../iron-behaviors/iron-control-state.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-behaviors/paper-ripple-behavior.html">
+<link rel="import" href="../paper-styles/default-theme.html">
 
 <!--
 `paper-tab` is styled to look like a tab.  It should be used in conjunction with
@@ -32,7 +33,7 @@ The following custom properties and mixins are available for styling:
 
 Custom property | Description | Default
 ----------------|-------------|----------
-`--paper-tab-ink` | Ink color | `--paper-yellow-a100`
+`--paper-tab-ink` | Ink color | `--accent-color`
 `--paper-tab` | Mixin applied to the tab | `{}`
 `--paper-tab-content` | Mixin applied to the tab content | `{}`
 `--paper-tab-content-unselected` | Mixin applied to the tab content when the tab is not selected | `{}`
@@ -87,7 +88,7 @@ Custom property | Description | Default
       }
 
       paper-ripple {
-        color: var(--paper-tab-ink, --paper-yellow-a100);
+        color: var(--paper-tab-ink, --accent-color);
       }
 
       .tab-content > ::content > a {
