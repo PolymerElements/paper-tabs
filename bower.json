@@ -38,5 +38,6 @@
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
     "web-component-tester": "*",
     "iron-pages": "PolymerElements/iron-pages#^1.0.0"
-  }
+  },
+  "ignore": []
 }
