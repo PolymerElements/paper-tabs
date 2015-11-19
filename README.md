@@ -55,6 +55,7 @@ To use links in tabs, add `link` attribute to `paper-tab` and put an `<a>`
 element in `paper-tab`.
 
 Example:
+
     <style is="custom-style">
       .link {
         
