@@ -333,6 +333,10 @@ Custom property | Description | Default
       'iron-select': '_onIronSelect',
       'iron-deselect': '_onIronDeselect'
     },
+    
+    attached: function() { // see PolymerElements/paper-tabs#31
+	  this._tabChanged(this._previousTab, null);
+    },
 
     created: function() {
       this._holdJob = null;
