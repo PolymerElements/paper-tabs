@@ -14,7 +14,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../iron-menu-behavior/iron-menubar-behavior.html">
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../paper-styles/color.html">
+<link rel="import" href="../paper-styles/default-theme.html">
 <link rel="import" href="paper-tabs-icons.html">
 <link rel="import" href="paper-tab.html">
 
@@ -83,7 +83,8 @@ The following custom properties and mixins are available for styling:
 
 Custom property | Description | Default
 ----------------|-------------|----------
-`--paper-tabs-selection-bar-color` | Color for the selection bar | `--paper-yellow-a100`
+`--paper-tabs-background-color` | Color for background | `--default-primary-color`
+`--paper-tabs-selection-bar-color` | Color for the selection bar | `--accent-color`
 `--paper-tabs` | Mixin applied to the tabs | `{}`
 
 @hero hero.svg
@@ -97,6 +98,7 @@ Custom property | Description | Default
         @apply(--layout);
         @apply(--layout-center);
 
+        background-color: var(--paper-tabs-background-color, --default-primary-color);
         height: 48px;
         font-size: 14px;
         font-weight: 500;
@@ -157,7 +159,7 @@ Custom property | Description | Default
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: var(--paper-tabs-selection-bar-color, --paper-yellow-a100);
+        background-color: var(--paper-tabs-selection-bar-color, --accent-color);
           -webkit-transform: scale(0);
         transform: scale(0);
           -webkit-transform-origin: left center;
