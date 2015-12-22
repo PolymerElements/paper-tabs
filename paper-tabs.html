@@ -105,7 +105,10 @@ Custom property | Description | Default
           -ms-user-select: none;
           -webkit-user-select: none;
         user-select: none;
-        -webkit-tap-highlight-color: rgba(0,0,0,0);
+
+        /* NOTE: Both values are needed, since some phones require the value to be `transparent`. */
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        -webkit-tap-highlight-color: transparent;
 
         @apply(--paper-tabs);
       }
