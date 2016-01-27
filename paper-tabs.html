@@ -119,11 +119,14 @@ Custom property | Description | Default
         height: 100%;
         white-space: nowrap;
         overflow: hidden;
-        @apply(--layout-flex);
+        @apply(--layout-flex-auto);
       }
 
       #tabsContent {
         height: 100%;
+        -moz-flex-basis: auto;
+        -ms-flex-basis: auto;
+        flex-basis: auto;
       }
 
       #tabsContent.scrollable {
