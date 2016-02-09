@@ -475,7 +475,13 @@ Custom property | Description | Default
         // bar animation: expand
         this.$.selectionBar.classList.add('expand');
 
-        if (oldIndex < index) {
+        var moveRight = oldIndex < index;
+        var isRTL = this._isRTL;
+        if (isRTL) {
+          moveRight = !moveRight;
+        }
+
+        if (moveRight) {
           this._positionBar(this._calcPercent(tabRect.left + tabRect.width - oldRect.left, w) - m,
               this._left);
         } else {
