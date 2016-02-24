@@ -201,9 +201,9 @@ Custom property | Description | Default
 
     <div id="tabsContainer" on-track="_scroll" on-down="_down">
       <div id="tabsContent" class$="[[_computeTabsContentClass(scrollable)]]">
-        <content select="*"></content>
         <div id="selectionBar" class$="[[_computeSelectionBarClass(noBar, alignBottom)]]"
             on-transitionend="_onBarTransitionEnd"></div>
+        <content select="*"></content>
       </div>
     </div>
 
