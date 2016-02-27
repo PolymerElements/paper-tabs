@@ -127,6 +127,7 @@ Custom property | Description | Default
         height: 100%;
         white-space: nowrap;
         overflow: hidden;
+        -webkit-overflow-scrolling: touch;
         @apply(--layout-flex-auto);
         @apply(--paper-tabs-container);
       }
@@ -215,7 +216,7 @@ Custom property | Description | Default
 
     <paper-icon-button icon="paper-tabs:chevron-left" class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown" tabindex="-1"></paper-icon-button>
 
-    <div id="tabsContainer" on-track="_scroll" on-down="_down">
+    <div id="tabsContainer" on-track="_onTrack" on-wheel="_onWheel" on-down="_down">
       <div id="tabsContent" class$="[[_computeTabsContentClass(scrollable, fitContainer)]]">
         <div id="selectionBar" class$="[[_computeSelectionBarClass(noBar, alignBottom)]]"
             on-transitionend="_onBarTransitionEnd"></div>
@@ -228,434 +229,586 @@ Custom property | Description | Default
   </template>
 
   <script>
-    Polymer({
-      is: 'paper-tabs',
+    (function() {
+      // True if, when an element has RTL directionality, `scrollLeft` is zero
+      // when the right edge of the scrollable area is aligned with the right
+      // edge of its overflowing content.
+      // (As opposed to LTR, where `scrollLeft` is zero when when the left edge
+      // of the scrollable area is aligned with the left edge of its overflowing
+      // content.)
+      var RTL_ZERO_RIGHT = false;
 
-      behaviors: [
-        Polymer.IronResizableBehavior,
-        Polymer.IronMenubarBehavior
-      ],
+      // True if, when an element has RTL directionality, positive changes to
+      // `scrollLeft` cause the scrollable area to show content that is further
+      // to the left.
+      // (As opposed to LTR, where positive changes to `scrollLeft` cause the
+      // scrollable area to show overflowing content that is further to the
+      // right.)
+      var RTL_POSITIVE_LEFT = false;
 
-      properties: {
-        /**
-         * If true, ink ripple effect is disabled. When this property is changed,
-         * all descendant `<paper-tab>` elements have their `noink` property
-         * changed to the new value as well.
-         */
-        noink: {
-          type: Boolean,
-          value: false,
-          observer: '_noinkChanged'
-        },
+      var SCROLLBAR_HEIGHT = 16;
 
-        /**
-         * If true, the bottom bar to indicate the selected tab will not be shown.
-         */
-        noBar: {
-          type: Boolean,
-          value: false
-        },
+      (function() {
+        function testRTLScrollLeftBehavior() {
+          var outer = document.createElement('div');
+          outer.setAttribute('dir', 'rtl');
+          outer.style.position = 'absolute';
+          outer.style.width = '50px';
+          outer.style.height = '50px';
+          outer.style.overflow = 'hidden';
 
-        /**
-         * If true, the slide effect for the bottom bar is disabled.
-         */
-        noSlide: {
-          type: Boolean,
-          value: false
-        },
+          var inner = document.createElement('div');
+          inner.style.width = '100px';
+          inner.style.height = '100px';
+          outer.appendChild(inner);
 
-        /**
-         * If true, tabs are scrollable and the tab width is based on the label width.
-         */
-        scrollable: {
-          type: Boolean,
-          value: false
-        },
+          document.body.appendChild(outer);
 
-        /**
-         * If true, tabs expand to fit their container. This currently only applies when
-         * scrollable is true.
-         */
-        fitContainer: {
-          type: Boolean,
-          value: false
-        },
+          // Is this container's non-zero-edge alignment represented by a
+          // positive or negative value? (Are we able to scroll to a negative
+          // value when the only overflowing content is positioned positively?)
+          outer.scrollLeft = -10000;
+          var fullScrollNegative = outer.scrollLeft < 0;
 
-        /**
-         * If true, dragging on the tabs to scroll is disabled.
-         */
-        disableDrag: {
-          type: Boolean,
-          value: false
-        },
+          // Are the right edges of the container and its overflowing content
+          // aligned when `scrollLeft` is zero? (The overflowing content is
+          // larger than the container, so only one set of edges can be
+          // aligned.)
+          outer.scrollLeft = 0;
+          var innerStartRect = inner.getBoundingClientRect();
+          var outerStartRect = outer.getBoundingClientRect();
+          RTL_ZERO_RIGHT = innerStartRect.right === outerStartRect.right;
 
-        /**
-         * If true, scroll buttons (left/right arrow) will be hidden for scrollable tabs.
-         */
-        hideScrollButtons: {
-          type: Boolean,
-          value: false
-        },
+          // Scroll to the end of the scrollable area in the available non-zero
+          // direction.
+          outer.scrollLeft += (fullScrollNegative ? -1 : 1) * 10000;
+          var innerEndRect = inner.getBoundingClientRect();
 
-        /**
-         * If true, the tabs are aligned to bottom (the selection bar appears at the top).
-         */
-        alignBottom: {
-          type: Boolean,
-          value: false
-        },
+          // If the change made to `scrollLeft` and the amount by which its
+          // overflowing content's bounding box moved have matching signs, then
+          // left is the positive direction.
+          var contentMovementNegative = innerEndRect.left < innerStartRect.left;
+          RTL_POSITIVE_LEFT = fullScrollNegative === contentMovementNegative;
 
-        selectable: {
-          type: String,
-          value: 'paper-tab'
-        },
+          outer.style.overflow = 'scroll';
+          SCROLLBAR_HEIGHT = outer.offsetHeight - outer.clientHeight;
 
-        /**
-         * If true, tabs are automatically selected when focused using the
-         * keyboard.
-         */
-        autoselect: {
-          type: Boolean,
-          value: false
-        },
-
-        /**
-         * The delay (in milliseconds) between when the user stops interacting
-         * with the tabs through the keyboard and when the focused item is
-         * automatically selected (if `autoselect` is true).
-         */
-        autoselectDelay: {
-          type: Number,
-          value: 0
-        },
-
-        _step: {
-          type: Number,
-          value: 10
-        },
-
-        _holdDelay: {
-          type: Number,
-          value: 1
-        },
-
-        _leftHidden: {
-          type: Boolean,
-          value: false
-        },
-
-        _rightHidden: {
-          type: Boolean,
-          value: false
-        },
-
-        _previousTab: {
-          type: Object
-        }
-      },
-
-      hostAttributes: {
-        role: 'tablist'
-      },
-
-      listeners: {
-        'iron-resize': '_onTabSizingChanged',
-        'iron-items-changed': '_onTabSizingChanged',
-        'iron-select': '_onIronSelect',
-        'iron-deselect': '_onIronDeselect'
-      },
-
-      keyBindings: {
-        'left:keyup right:keyup': '_onArrowKeyup'
-      },
-
-      created: function() {
-        this._holdJob = null;
-        this._pendingActivationItem = undefined;
-        this._pendingActivationTimeout = undefined;
-        this._bindDelayedActivationHandler = this._delayedActivationHandler.bind(this);
-        this.addEventListener('blur', this._onBlurCapture.bind(this), true);
-      },
-
-      ready: function() {
-        this.setScrollDirection('y', this.$.tabsContainer);
-      },
-
-      detached: function() {
-        this._cancelPendingActivation();
-      },
-
-      _noinkChanged: function(noink) {
-        var childTabs = Polymer.dom(this).querySelectorAll('paper-tab');
-        childTabs.forEach(noink ? this._setNoinkAttribute : this._removeNoinkAttribute);
-      },
-
-      _setNoinkAttribute: function(element) {
-        element.setAttribute('noink', '');
-      },
-
-      _removeNoinkAttribute: function(element) {
-        element.removeAttribute('noink');
-      },
-
-      _computeScrollButtonClass: function(hideThisButton, scrollable, hideScrollButtons) {
-        if (!scrollable || hideScrollButtons) {
-          return 'hidden';
-        }
-
-        if (hideThisButton) {
-          return 'not-visible';
-        }
-
-        return '';
-      },
-
-      _computeTabsContentClass: function(scrollable, fitContainer) {
-        return scrollable ? 'scrollable' + (fitContainer ? ' fit-container' : '') : ' fit-container';
-      },
-
-      _computeSelectionBarClass: function(noBar, alignBottom) {
-        if (noBar) {
-          return 'hidden';
-        } else if (alignBottom) {
-          return 'align-bottom';
-        }
-
-        return '';
-      },
-
-      // TODO(cdata): Add `track` response back in when gesture lands.
-
-      _onTabSizingChanged: function() {
-        this.debounce('_onTabSizingChanged', function() {
-          this._scroll();
-          this._tabChanged(this.selectedItem);
-        }, 10);
-      },
-
-      _onIronSelect: function(event) {
-        this._tabChanged(event.detail.item, this._previousTab);
-        this._previousTab = event.detail.item;
-        this.cancelDebouncer('tab-changed');
-      },
-
-      _onIronDeselect: function(event) {
-        this.debounce('tab-changed', function() {
-          this._tabChanged(null, this._previousTab);
-          this._previousTab = null;
-        // See polymer/polymer#1305
-        }, 1);
-      },
-
-      _activateHandler: function() {
-        // Cancel item activations scheduled by keyboard events when any other
-        // action causes an item to be activated (e.g. clicks).
-        this._cancelPendingActivation();
-
-        Polymer.IronMenuBehaviorImpl._activateHandler.apply(this, arguments);
-      },
-
-      /**
-       * Activates an item after a delay (in milliseconds).
-       */
-      _scheduleActivation: function(item, delay) {
-        this._pendingActivationItem = item;
-        this._pendingActivationTimeout = this.async(
-            this._bindDelayedActivationHandler, delay);
-      },
-
-      /**
-       * Activates the last item given to `_scheduleActivation`.
-       */
-      _delayedActivationHandler: function() {
-        var item = this._pendingActivationItem;
-        this._pendingActivationItem = undefined;
-        this._pendingActivationTimeout = undefined;
-        item.fire(this.activateEvent, null, {
-          bubbles: true,
-          cancelable: true
-        });
-      },
-
-      /**
-       * Cancels a previously scheduled item activation made with
-       * `_scheduleActivation`.
-       */
-      _cancelPendingActivation: function() {
-        if (this._pendingActivationTimeout !== undefined) {
-          this.cancelAsync(this._pendingActivationTimeout);
-          this._pendingActivationItem = undefined;
-          this._pendingActivationTimeout = undefined;
-        }
-      },
-
-      _onArrowKeyup: function(event) {
-        if (this.autoselect) {
-          this._scheduleActivation(this.focusedItem, this.autoselectDelay);
-        }
-      },
-
-      _onBlurCapture: function(event) {
-        // Cancel a scheduled item activation (if any) when that item is
-        // blurred.
-        if (event.target === this._pendingActivationItem) {
-          this._cancelPendingActivation();
-        }
-      },
-
-      get _tabContainerScrollSize () {
-        return Math.max(
-          0,
-          this.$.tabsContainer.scrollWidth -
-            this.$.tabsContainer.offsetWidth
-        );
-      },
-
-      _scroll: function(e, detail) {
-        if (!this.scrollable) {
-          return;
-        }
-
-        var ddx = (detail && -detail.ddx) || 0;
-        this._affectScroll(ddx);
-      },
-
-      _down: function(e) {
-        // go one beat async to defeat IronMenuBehavior
-        // autorefocus-on-no-selection timeout
-        this.async(function() {
-          if (this._defaultFocusAsync) {
-            this.cancelAsync(this._defaultFocusAsync);
-            this._defaultFocusAsync = null;
-          }
-        }, 1);
-      },
-
-      _affectScroll: function(dx) {
-        this.$.tabsContainer.scrollLeft += dx;
-
-        var scrollLeft = this.$.tabsContainer.scrollLeft;
-
-        this._leftHidden = scrollLeft === 0;
-        this._rightHidden = scrollLeft === this._tabContainerScrollSize;
-      },
-
-      _onLeftScrollButtonDown: function() {
-        this._scrollToLeft();
-        this._holdJob = setInterval(this._scrollToLeft.bind(this), this._holdDelay);
-      },
-
-      _onRightScrollButtonDown: function() {
-        this._scrollToRight();
-        this._holdJob = setInterval(this._scrollToRight.bind(this), this._holdDelay);
-      },
-
-      _onScrollButtonUp: function() {
-        clearInterval(this._holdJob);
-        this._holdJob = null;
-      },
-
-      _scrollToLeft: function() {
-        this._affectScroll(-this._step);
-      },
-
-      _scrollToRight: function() {
-        this._affectScroll(this._step);
-      },
-
-      _tabChanged: function(tab, old) {
-        if (!tab) {
-          // Remove the bar without animation.
-          this.$.selectionBar.classList.remove('expand');
-          this.$.selectionBar.classList.remove('contract');
-          this._positionBar(0, 0);
-          return;
-        }
-
-        var r = this.$.tabsContent.getBoundingClientRect();
-        var w = r.width;
-        var tabRect = tab.getBoundingClientRect();
-        var tabOffsetLeft = tabRect.left - r.left;
-
-        this._pos = {
-          width: this._calcPercent(tabRect.width, w),
-          left: this._calcPercent(tabOffsetLeft, w)
+          document.body.removeChild(outer);
         };
 
-        if (this.noSlide || old == null) {
-          // Position the bar without animation.
-          this.$.selectionBar.classList.remove('expand');
-          this.$.selectionBar.classList.remove('contract');
-          this._positionBar(this._pos.width, this._pos.left);
-          return;
-        }
-
-        var oldRect = old.getBoundingClientRect();
-        var oldIndex = this.items.indexOf(old);
-        var index = this.items.indexOf(tab);
-        var m = 5;
-
-        // bar animation: expand
-        this.$.selectionBar.classList.add('expand');
-
-        var moveRight = oldIndex < index;
-        var isRTL = this._isRTL;
-        if (isRTL) {
-          moveRight = !moveRight;
-        }
-
-        if (moveRight) {
-          this._positionBar(this._calcPercent(tabRect.left + tabRect.width - oldRect.left, w) - m,
-              this._left);
+        // Wait for the load event if necessary, otherwise
+        // `getBoundingClientRect` will only return rectangles with all values
+        // set to zero.
+        if (document.readyState === 'complete') {
+          testRTLScrollLeftBehavior();
         } else {
-          this._positionBar(this._calcPercent(oldRect.left + oldRect.width - tabRect.left, w) - m,
-              this._calcPercent(tabOffsetLeft, w) + m);
+          window.addEventListener('load', function onLoad() {
+            window.removeEventListener('load', onLoad);
+            testRTLScrollLeftBehavior();
+          });
         }
+      })();
 
-        if (this.scrollable) {
-          this._scrollToSelectedIfNeeded(tabRect.width, tabOffsetLeft);
-        }
-      },
+      Polymer({
+        is: 'paper-tabs',
 
-      _scrollToSelectedIfNeeded: function(tabWidth, tabOffsetLeft) {
-        var l = tabOffsetLeft - this.$.tabsContainer.scrollLeft;
-        if (l < 0) {
-          this.$.tabsContainer.scrollLeft += l;
-        } else {
-          l += (tabWidth - this.$.tabsContainer.offsetWidth);
-          if (l > 0) {
-            this.$.tabsContainer.scrollLeft += l;
+        behaviors: [
+          Polymer.IronResizableBehavior,
+          Polymer.IronMenubarBehavior
+        ],
+
+        properties: {
+          /**
+           * If true, ink ripple effect is disabled. When this property is changed,
+           * all descendant `<paper-tab>` elements have their `noink` property
+           * changed to the new value as well.
+           */
+          noink: {
+            type: Boolean,
+            value: false,
+            observer: '_noinkChanged'
+          },
+
+          /**
+           * If true, the bottom bar to indicate the selected tab will not be shown.
+           */
+          noBar: {
+            type: Boolean,
+            value: false
+          },
+
+          /**
+           * If true, the slide effect for the bottom bar is disabled.
+           */
+          noSlide: {
+            type: Boolean,
+            value: false
+          },
+
+          /**
+           * If true, tabs are scrollable and the tab width is based on the label width.
+           */
+          scrollable: {
+            type: Boolean,
+            value: false
+          },
+
+          /**
+           * If true, tabs expand to fit their container. This currently only applies when
+           * scrollable is true.
+           */
+          fitContainer: {
+            type: Boolean,
+            value: false
+          },
+
+          /**
+           * If true, dragging on the tabs to scroll is disabled.
+           */
+          disableDrag: {
+            type: Boolean,
+            value: false
+          },
+
+          /**
+           * If true, scroll buttons (left/right arrow) will be hidden for scrollable tabs.
+           */
+          hideScrollButtons: {
+            type: Boolean,
+            value: false
+          },
+
+          /**
+           * If true, the tabs are aligned to bottom (the selection bar appears at the top).
+           */
+          alignBottom: {
+            type: Boolean,
+            value: false
+          },
+
+          selectable: {
+            type: String,
+            value: 'paper-tab'
+          },
+
+          /**
+           * If true, tabs are automatically selected when focused using the
+           * keyboard.
+           */
+          autoselect: {
+            type: Boolean,
+            value: false
+          },
+
+          /**
+           * The delay (in milliseconds) between when the user stops interacting
+           * with the tabs through the keyboard and when the focused item is
+           * automatically selected (if `autoselect` is true).
+           */
+          autoselectDelay: {
+            type: Number,
+            value: 0
+          },
+
+          _step: {
+            type: Number,
+            value: 10
+          },
+
+          _holdDelay: {
+            type: Number,
+            value: 1
+          },
+
+          _leftHidden: {
+            type: Boolean,
+            value: false
+          },
+
+          _rightHidden: {
+            type: Boolean,
+            value: false
+          },
+
+          _previousTab: {
+            type: Object
+          }
+        },
+
+        hostAttributes: {
+          role: 'tablist'
+        },
+
+        listeners: {
+          'iron-resize': '_onTabSizingChanged',
+          'iron-items-changed': '_onTabSizingChanged',
+          'iron-select': '_onIronSelect',
+          'iron-deselect': '_onIronDeselect'
+        },
+
+        keyBindings: {
+          'left:keyup right:keyup': '_onArrowKeyup'
+        },
+
+        created: function() {
+          this._holdJob = null;
+          this._pendingActivationItem = undefined;
+          this._pendingActivationTimeout = undefined;
+          this._bindDelayedActivationHandler = this._delayedActivationHandler.bind(this);
+          this.addEventListener('blur', this._onBlurCapture.bind(this), true);
+        },
+
+        detached: function() {
+          this._cancelPendingActivation();
+        },
+
+        _noinkChanged: function(noink) {
+          var childTabs = Polymer.dom(this).querySelectorAll('paper-tab');
+          childTabs.forEach(noink ? this._setNoinkAttribute : this._removeNoinkAttribute);
+        },
+
+        _setNoinkAttribute: function(element) {
+          element.setAttribute('noink', '');
+        },
+
+        _removeNoinkAttribute: function(element) {
+          element.removeAttribute('noink');
+        },
+
+        _computeScrollButtonClass: function(hideThisButton, scrollable, hideScrollButtons) {
+          if (!scrollable || hideScrollButtons) {
+            return 'hidden';
+          }
+
+          if (hideThisButton) {
+            return 'not-visible';
+          }
+
+          return '';
+        },
+
+        _computeTabsContentClass: function(scrollable, fitContainer) {
+          return scrollable ? 'scrollable' + (fitContainer ? ' fit-container' : '') : ' fit-container';
+        },
+
+        _computeSelectionBarClass: function(noBar, alignBottom) {
+          if (noBar) {
+            return 'hidden';
+          } else if (alignBottom) {
+            return 'align-bottom';
+          }
+
+          return '';
+        },
+
+        // TODO(cdata): Add `track` response back in when gesture lands.
+
+        _onTabSizingChanged: function() {
+          this.debounce('_onTabSizingChanged', function() {
+            this._tabChanged(this.selectedItem);
+          }, 10);
+        },
+
+        _onIronSelect: function(event) {
+          this._tabChanged(event.detail.item, this._previousTab);
+          this._previousTab = event.detail.item;
+          this.cancelDebouncer('tab-changed');
+        },
+
+        _onIronDeselect: function(event) {
+          this.debounce('tab-changed', function() {
+            this._tabChanged(null, this._previousTab);
+            this._previousTab = null;
+          // See polymer/polymer#1305
+          }, 1);
+        },
+
+        _activateHandler: function() {
+          // Cancel item activations scheduled by keyboard events when any other
+          // action causes an item to be activated (e.g. clicks).
+          this._cancelPendingActivation();
+
+          Polymer.IronMenuBehaviorImpl._activateHandler.apply(this, arguments);
+        },
+
+        /**
+         * Activates an item after a delay (in milliseconds).
+         */
+        _scheduleActivation: function(item, delay) {
+          this._pendingActivationItem = item;
+          this._pendingActivationTimeout = this.async(
+              this._bindDelayedActivationHandler, delay);
+        },
+
+        /**
+         * Activates the last item given to `_scheduleActivation`.
+         */
+        _delayedActivationHandler: function() {
+          var item = this._pendingActivationItem;
+          this._pendingActivationItem = undefined;
+          this._pendingActivationTimeout = undefined;
+          item.fire(this.activateEvent, null, {
+            bubbles: true,
+            cancelable: true
+          });
+        },
+
+        /**
+         * Cancels a previously scheduled item activation made with
+         * `_scheduleActivation`.
+         */
+        _cancelPendingActivation: function() {
+          if (this._pendingActivationTimeout !== undefined) {
+            this.cancelAsync(this._pendingActivationTimeout);
+            this._pendingActivationItem = undefined;
+            this._pendingActivationTimeout = undefined;
+          }
+        },
+
+        _onArrowKeyup: function(event) {
+          if (this.autoselect) {
+            this._scheduleActivation(this.focusedItem, this.autoselectDelay);
+          }
+        },
+
+        _onBlurCapture: function(event) {
+          // Cancel a scheduled item activation (if any) when that item is
+          // blurred.
+          if (event.target === this._pendingActivationItem) {
+            this._cancelPendingActivation();
+          }
+        },
+
+        get _tabContainerScrollSize () {
+          return Math.max(
+            0,
+            this.$.tabsContainer.scrollWidth -
+              this.$.tabsContainer.offsetWidth
+          );
+        },
+
+        _getRTL: function() {
+          return this._cachedRTL !== undefined ? this._cachedRTL : this._isRTL;
+        },
+
+        _onTrack: function(e, detail) {
+          if (!this.scrollable) return;
+
+          if (detail && detail.ddx !== undefined) {
+            this._affectScroll(-detail.ddx);
+          }
+        },
+
+        _onWheel: function(e) {
+          if (e.deltaX === 0) return;
+
+          var scrollFactor = 0;
+          switch (e.deltaMode) {
+            case WheelEvent.DOM_DELTA_PIXEL:
+              scrollFactor = 1;
+            break;
+            case WheelEvent.DOM_DELTA_LINE:
+              scrollFactor = parseFloat(getComputedStyle(this).fontSize);
+            break;
+            case WheelEvent.DOM_DELTA_PAGE:
+              scrollFactor = this.$.tabsContainer.getBoundingClientRect().width;
+            break;
+          }
+
+          if (scrollFactor !== 0) {
+            e.preventDefault();
+            this._affectScroll(e.deltaX * scrollFactor);
+            this._updateScrollButtonsHiddenState();
+          }
+        },
+
+        _down: function(e) {
+          // go one beat async to defeat IronMenuBehavior
+          // autorefocus-on-no-selection timeout
+          this.async(function() {
+            if (this._defaultFocusAsync) {
+              this.cancelAsync(this._defaultFocusAsync);
+              this._defaultFocusAsync = null;
+            }
+          }, 1);
+        },
+
+        _updateScrollButtonsHiddenState: function() {
+          var normalizedLeft =
+            this._scrollLeftToNormalizedLeft(this.$.tabsContainer.scrollLeft);
+
+          this._leftHidden = normalizedLeft <= 0;
+          this._rightHidden = normalizedLeft >= this._tabContainerScrollSize;
+        },
+
+        /**
+         * Normalizes a value returned by `scrollLeft`, which can be writing
+         * direction dependent, to its LTR equivalent.
+         */
+        _scrollLeftToNormalizedLeft: function(scrollLeft) {
+          if (this._getRTL()) {
+            var normalizedLeft = scrollLeft;
+            normalizedLeft *= RTL_POSITIVE_LEFT ? -1 : 1;
+            normalizedLeft += RTL_ZERO_RIGHT ? this._tabContainerScrollSize : 0;
+            return normalizedLeft;
+          } else {
+            return scrollLeft;
+          }
+        },
+
+        /**
+         * Converts normalized (LTR-like) `scrollLeft` values to the browser
+         * specific value based on the element's current directionality.
+         */
+        _normalizedLeftToScrollLeft: function(normalizedLeft) {
+          if (this._getRTL()) {
+            var scrollLeft = normalizedLeft;
+            scrollLeft -= RTL_ZERO_RIGHT ? this._tabContainerScrollSize : 0;
+            scrollLeft *= RTL_POSITIVE_LEFT ? -1 : 1;
+            return scrollLeft;
+          } else {
+            return normalizedLeft;
+          }
+        },
+
+        /**
+         * Scrolls to a normalized (LTR-like) `scrollLeft` position, regardless
+         * of the element's current directionality.
+         */
+        _scrollToNormalizedLeft: function(normalizedLeft) {
+          this.$.tabsContainer.scrollLeft = this._normalizedLeftToScrollLeft(normalizedLeft);
+          this._updateScrollButtonsHiddenState();
+        },
+
+        /**
+         * Adjusts `scrollLeft` by a relative amount, with positive values
+         * scrolling into view content hidden to the right (LTR-like),
+         * regardless of the element's current directionality.
+         */
+        _affectScroll: function(dx) {
+          this.$.tabsContainer.scrollLeft += (this._getRTL() && RTL_POSITIVE_LEFT ? -1 : 1) * dx;
+          this._updateScrollButtonsHiddenState();
+        },
+
+        _onLeftScrollButtonDown: function() {
+          this._scrollToLeft();
+          this._holdJob = setInterval(this._scrollToLeft.bind(this), this._holdDelay);
+        },
+
+        _onRightScrollButtonDown: function() {
+          this._scrollToRight();
+          this._holdJob = setInterval(this._scrollToRight.bind(this), this._holdDelay);
+        },
+
+        _onScrollButtonUp: function() {
+          clearInterval(this._holdJob);
+          this._holdJob = null;
+        },
+
+        _scrollToLeft: function() {
+          this._affectScroll(-this._step);
+        },
+
+        _scrollToRight: function() {
+          this._affectScroll(this._step);
+        },
+
+        _tabChanged: function(tab, old) {
+          if (!tab) {
+            // Remove the bar without animation.
+            this.$.selectionBar.classList.remove('expand');
+            this.$.selectionBar.classList.remove('contract');
+            this._positionBar(0, 0);
+            return;
+          }
+
+          var r = this.$.tabsContent.getBoundingClientRect();
+          var w = r.width;
+          var tabRect = tab.getBoundingClientRect();
+          var tabOffsetLeft = tabRect.left - r.left;
+
+          this._pos = {
+            width: this._calcPercent(tabRect.width, w),
+            left: this._calcPercent(tabOffsetLeft, w)
+          };
+
+          if (this.noSlide || old == null) {
+            // Position the bar without animation.
+            this.$.selectionBar.classList.remove('expand');
+            this.$.selectionBar.classList.remove('contract');
+            this._positionBar(this._pos.width, this._pos.left);
+          } else {
+            var oldRect = old.getBoundingClientRect();
+            var oldIndex = this.items.indexOf(old);
+            var index = this.items.indexOf(tab);
+            var m = 5;
+
+            // bar animation: expand
+            this.$.selectionBar.classList.add('expand');
+
+            var moveRight = oldIndex < index;
+            var isRTL = this._getRTL();
+            if (isRTL) {
+              moveRight = !moveRight;
+            }
+
+            if (moveRight) {
+              this._positionBar(this._calcPercent(tabRect.left + tabRect.width - oldRect.left, w) - m,
+                  this._left);
+            } else {
+              this._positionBar(this._calcPercent(oldRect.left + oldRect.width - tabRect.left, w) - m,
+                  this._calcPercent(tabOffsetLeft, w) + m);
+            }
+          }
+
+          if (this.scrollable) {
+            this._scrollToSelectedIfNeeded(tabRect.width, tabOffsetLeft);
+          }
+
+          this._updateScrollButtonsHiddenState();
+        },
+
+        _scrollToSelectedIfNeeded: function(tabWidth, tabOffsetLeft) {
+          var containerRect = this.$.tabsContainer.getBoundingClientRect();
+          var tabRect = this.selectedItem.getBoundingClientRect();
+          var normalizedLeft =
+            this._scrollLeftToNormalizedLeft(this.$.tabsContainer.scrollLeft);
+
+          if (tabOffsetLeft < normalizedLeft) {
+            this._scrollToNormalizedLeft(tabOffsetLeft);
+          } else if (normalizedLeft + containerRect.width < tabOffsetLeft + tabWidth) {
+            this._scrollToNormalizedLeft(tabOffsetLeft + tabWidth - containerRect.width);
+          }
+        },
+
+        _calcPercent: function(w, w0) {
+          return 100 * w / w0;
+        },
+
+        _positionBar: function(width, left) {
+          width = width || 0;
+          left = left || 0;
+
+          this._width = width;
+          this._left = left;
+          this.transform(
+              'translateX(' + left + '%) scaleX(' + (width / 100) + ')',
+              this.$.selectionBar);
+        },
+
+        _onBarTransitionEnd: function(e) {
+          var cl = this.$.selectionBar.classList;
+          // bar animation: expand -> contract
+          if (cl.contains('expand')) {
+            cl.remove('expand');
+            cl.add('contract');
+            this._positionBar(this._pos.width, this._pos.left);
+          // bar animation done
+          } else if (cl.contains('contract')) {
+            cl.remove('contract');
           }
         }
-      },
-
-      _calcPercent: function(w, w0) {
-        return 100 * w / w0;
-      },
-
-      _positionBar: function(width, left) {
-        width = width || 0;
-        left = left || 0;
-
-        this._width = width;
-        this._left = left;
-        this.transform(
-            'translateX(' + left + '%) scaleX(' + (width / 100) + ')',
-            this.$.selectionBar);
-      },
-
-      _onBarTransitionEnd: function(e) {
-        var cl = this.$.selectionBar.classList;
-        // bar animation: expand -> contract
-        if (cl.contains('expand')) {
-          cl.remove('expand');
-          cl.add('contract');
-          this._positionBar(this._pos.width, this._pos.left);
-        // bar animation done
-        } else if (cl.contains('contract')) {
-          cl.remove('contract');
-        }
-      }
-    });
+      });
+    })();
   </script>
 </dom-module>
