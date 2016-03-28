@@ -170,7 +170,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <h3>
         Use the <code>link</code> attribute when a <code>paper-tab</code>
-        contains a link. The link will fill the entire tab.
+        contains a link. The link will fill the entire tab. <code>paper-tabs</code>
+        implements its own tabindexing and keyboard focus patterns so an anchor
+        placed inside should set <code>tabindex="-1"</code>.
       </h3>
       <demo-snippet>
         <template>
@@ -185,9 +187,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </style>
 
           <paper-tabs selected="0">
-            <paper-tab link><a href="#item1">ITEM ONE</a></paper-tab>
-            <paper-tab link><a href="#item2">ITEM TWO</a></paper-tab>
-            <paper-tab link><a href="#item3">ITEM THREE</a></paper-tab>
+            <paper-tab link>
+              <a href="#item1" tabindex="-1">ITEM ONE</a>
+            </paper-tab>
+            <paper-tab link>
+              <a href="#item2" tabindex="-1">ITEM TWO</a>
+            </paper-tab>
+            <paper-tab link>
+              <a href="#item3" tabindex="-1">ITEM THREE</a>
+            </paper-tab>
           </paper-tabs>
         </template>
       </demo-snippet>
