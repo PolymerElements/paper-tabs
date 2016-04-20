@@ -199,7 +199,7 @@ Custom property | Description | Default
 
     <paper-icon-button icon="paper-tabs:chevron-left" class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown" tabindex="-1"></paper-icon-button>
 
-    <div id="tabsContainer" on-track="_scroll" on-down="_down">
+    <div id="tabsContainer" on-track="_scroll" on-down="_down" on-up="_up">
       <div id="tabsContent" class$="[[_computeTabsContentClass(scrollable)]]">
         <div id="selectionBar" class$="[[_computeSelectionBarClass(noBar, alignBottom)]]"
             on-transitionend="_onBarTransitionEnd"></div>
@@ -490,8 +490,21 @@ Custom property | Description | Default
           return;
         }
 
+        if (!this._rippleRemoved) {
+          var childTabs = Polymer.dom(this).querySelectorAll('paper-tab[pressed]');
+          childTabs.forEach(this._upRipple.bind(this, e));
+        }
+
         var ddx = (detail && -detail.ddx) || 0;
         this._affectScroll(ddx);
+      },
+
+      _upRipple: function(e, element) {
+        this._rippleRemoved = true;
+        if (element.hasRipple()) {
+          var ripple = element.getRipple();
+          ripple.upAction(e);
+        }
       },
 
       _down: function(e) {
@@ -503,6 +516,10 @@ Custom property | Description | Default
             this._defaultFocusAsync = null;
           }
         }, 1);
+      },
+
+      _up: function(e) {
+        delete this._rippleRemoved;
       },
 
       _affectScroll: function(dx) {
