@@ -88,28 +88,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           });
   
           test('have scrollbuttons', function() {
-          	assert.isTrue(leftScrollbutton.offsetWidth>0);
-          	assert.isTrue(rightScrollbutton.offsetWidth>0);
+            assert.isTrue(leftScrollbutton.offsetWidth>0);
+            assert.isTrue(rightScrollbutton.offsetWidth>0);
           });
           
           test('when scroll-offset is 0, then the left scrollbutton is faded out', function(done) {
          	  
             Polymer.Base.async(function() {
-         	    assert.equal(tabsContainer.scrollLeft, 0);
-         	    assert.isTrue(leftScrollbutton.classList.contains('not-visible'));
-           	  assert.isFalse(rightScrollbutton.classList.contains('not-visible'));
+              assert.equal(tabsContainer.scrollLeft, 0);
+              assert.isTrue(leftScrollbutton.classList.contains('not-visible'));
+              assert.isFalse(rightScrollbutton.classList.contains('not-visible'));
               done();
             }, 100);
           	
           });
           
           test('when scroll-offset is \'max\', then the right scrollbutton is faded out', function(done) {
-       	    //Set scrollLeft to a very high number. Will scroll to outermost position.
-       	    tabsContainer.scrollLeft = 99999;
+            //Set scrollLeft to a very high number. Will scroll to outermost position.
+            tabsContainer.scrollLeft = 99999;
        	  
-       	    Polymer.Base.async(function() {
-       	      assert.isFalse(leftScrollbutton.classList.contains('not-visible'));
-         	    assert.isTrue(rightScrollbutton.classList.contains('not-visible'));
+            Polymer.Base.async(function() {
+              assert.isFalse(leftScrollbutton.classList.contains('not-visible'));
+              assert.isTrue(rightScrollbutton.classList.contains('not-visible'));
               done();
             }, 100);
             	
@@ -127,13 +127,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           });
   
           test('the right scrollbutton is faded out, even if scrolloffset is fractional due to zoom', function(done) {
-       	    //Set scrollLeft to a very high number. Will scroll to outermost position.
-       	    tabsContainer.scrollLeft = 99999;
-       	    //Using Zoom-Fixture will let tabsContainer.scrollLeft become fractional in certain browsers (i.e. Chrome)
+            //Set scrollLeft to a very high number. Will scroll to outermost position.
+            tabsContainer.scrollLeft = 99999;
+            //Using Zoom-Fixture will let tabsContainer.scrollLeft become fractional in certain browsers (i.e. Chrome)
        	  
-       	    Polymer.Base.async(function() {
-       		    assert.isFalse(leftScrollbutton.classList.contains('not-visible'));
-         	    assert.isTrue(rightScrollbutton.classList.contains('not-visible'));
+            Polymer.Base.async(function() {
+              assert.isFalse(leftScrollbutton.classList.contains('not-visible'));
+              assert.isTrue(rightScrollbutton.classList.contains('not-visible'));
               done();
             }, 100);
               	
