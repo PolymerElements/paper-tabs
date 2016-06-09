@@ -44,18 +44,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </paper-tabs>
       </template>
     </test-fixture>
-
-    <test-fixture id="zoomed">
-      <template>
-        <paper-tabs scrollable style="width: 500px;zoom: 110%;">
-          <paper-tab style="width: 150px">ITEM ONE</paper-tab>
-          <paper-tab style="width: 150px">ITEM TWO</paper-tab>
-          <paper-tab style="width: 150px">ITEM THREE</paper-tab>
-          <paper-tab style="width: 150px">ITEM FOUR</paper-tab>
-        </paper-tabs>
-      </template>
-    </test-fixture>
-
+    
     <script>
 
       suite('scrollables suite', function() {
@@ -120,7 +109,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         suite('zoomed, scrollable paper-tabs', function() {
   		
           setup(function () {
-            tabs = fixture('zoomed');
+            tabs = fixture('scrollable');
             leftScrollbutton = Polymer.dom(tabs.root).querySelectorAll('paper-icon-button')[0];
             rightScrollbutton = Polymer.dom(tabs.root).querySelectorAll('paper-icon-button')[1];
             tabsContainer = tabs.$.tabsContainer;
@@ -129,7 +118,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           test('the right scrollbutton is faded out, even if scrolloffset is fractional due to zoom', function(done) {
             //Set scrollLeft to a very high number. Will scroll to outermost position.
             tabsContainer.scrollLeft = 99999;
-            //Using Zoom-Fixture will let tabsContainer.scrollLeft become fractional in certain browsers (i.e. Chrome)
+            //TODO: Enforce Zoom somehow
        	  
             Polymer.Base.async(function() {
               assert.isFalse(leftScrollbutton.classList.contains('not-visible'));
