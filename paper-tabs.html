@@ -511,7 +511,7 @@ Custom property | Description | Default
         var scrollLeft = this.$.tabsContainer.scrollLeft;
 
         this._leftHidden = scrollLeft === 0;
-        this._rightHidden = scrollLeft === this._tabContainerScrollSize;
+        this._rightHidden = Math.ceil(scrollLeft) >= this._tabContainerScrollSize;
       },
 
       _onLeftScrollButtonDown: function() {
