@@ -294,6 +294,14 @@ Custom property | Description | Default
         },
 
         /**
+         * If true, scroll buttons (left/right arrow) containers will be collapsed while hidden for scrollable tabs.
+         */
+        collapseScrollButtons: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
          * If true, the tabs are aligned to bottom (the selection bar appears at the top).
          */
         alignBottom: {
@@ -394,13 +402,18 @@ Custom property | Description | Default
         element.removeAttribute('noink');
       },
 
-      _computeScrollButtonClass: function(hideThisButton, scrollable, hideScrollButtons) {
+      _computeScrollButtonClass: function(hideThisButton, scrollable, hideScrollButtons, collapseScrollButtons) {
         if (!scrollable || hideScrollButtons) {
           return 'hidden';
         }
 
         if (hideThisButton) {
-          return 'not-visible';
+          if(collapseScrollButtons) {
+            return 'hidden';
+          }
+          else {
+            return 'not-visible';
+          }
         }
 
         return '';
