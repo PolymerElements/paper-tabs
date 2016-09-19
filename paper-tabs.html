@@ -99,8 +99,8 @@ Custom property | Description | Default
   <template>
     <style>
       :host {
-        @apply(--layout);
-        @apply(--layout-center);
+        @apply --layout;
+        @apply --layout-center;
 
         height: 48px;
         font-size: 14px;
@@ -115,11 +115,11 @@ Custom property | Description | Default
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         -webkit-tap-highlight-color: transparent;
 
-        @apply(--paper-tabs);
+        @apply --paper-tabs;
       }
 
       :host-context([dir=rtl]) {
-        @apply(--layout-horizontal-reverse);
+        @apply --layout-horizontal-reverse;
       }
 
       #tabsContainer {
@@ -127,8 +127,8 @@ Custom property | Description | Default
         height: 100%;
         white-space: nowrap;
         overflow: hidden;
-        @apply(--layout-flex-auto);
-        @apply(--paper-tabs-container);
+        @apply --layout-flex-auto;
+        @apply --paper-tabs-container;
       }
 
       #tabsContent {
@@ -146,7 +146,7 @@ Custom property | Description | Default
 
       #tabsContent:not(.scrollable),
       #tabsContent.scrollable.fit-container {
-        @apply(--layout-horizontal);
+        @apply --layout-horizontal;
       }
 
       #tabsContent.scrollable.fit-container {
@@ -154,6 +154,13 @@ Custom property | Description | Default
       }
 
       #tabsContent.scrollable.fit-container > ::content > * {
+        /* IE - prevent tabs from compressing when they should scroll. */
+        -ms-flex: 1 0 auto;
+        -webkit-flex: 1 0 auto;
+        flex: 1 0 auto;
+      }
+
+      #tabsContent.scrollable.fit-container > ::slotted {
         /* IE - prevent tabs from compressing when they should scroll. */
         -ms-flex: 1 0 auto;
         -webkit-flex: 1 0 auto;
@@ -182,7 +189,7 @@ Custom property | Description | Default
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: var(--paper-tabs-selection-bar-color, --paper-yellow-a100);
+        background-color: var(--paper-tabs-selection-bar-color, var(--paper-yellow-a100));
           -webkit-transform: scale(0);
         transform: scale(0);
           -webkit-transform-origin: left center;
@@ -190,7 +197,7 @@ Custom property | Description | Default
           transition: -webkit-transform;
         transition: transform;
 
-        @apply(--paper-tabs-selection-bar);
+        @apply --paper-tabs-selection-bar;
       }
 
       #selectionBar.align-bottom {
@@ -211,19 +218,22 @@ Custom property | Description | Default
       #tabsContent > ::content > *:not(#selectionBar) {
         height: 100%;
       }
+
+      #tabsContent > ::slotted(:not(#selectionBar)) {
+        height: 100%;
+      }
     </style>
 
-    <paper-icon-button icon="paper-tabs:chevron-left" class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown" tabindex="-1"></paper-icon-button>
+    <paper-icon-button id="scrollButtonLeft" icon="paper-tabs:chevron-left" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown" tabindex="-1"></paper-icon-button>
 
     <div id="tabsContainer" on-track="_scroll" on-down="_down">
-      <div id="tabsContent" class$="[[_computeTabsContentClass(scrollable, fitContainer)]]">
-        <div id="selectionBar" class$="[[_computeSelectionBarClass(noBar, alignBottom)]]"
-            on-transitionend="_onBarTransitionEnd"></div>
-        <content select="*"></content>
+      <div id="tabsContent">
+        <div id="selectionBar" on-transitionend="_onBarTransitionEnd"></div>
+        <content></content><slot></slot>
       </div>
     </div>
 
-    <paper-icon-button icon="paper-tabs:chevron-right" class$="[[_computeScrollButtonClass(_rightHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onRightScrollButtonDown" tabindex="-1"></paper-icon-button>
+    <paper-icon-button id="scrollButtonRight" icon="paper-tabs:chevron-right" on-up="_onScrollButtonUp" on-down="_onRightScrollButtonDown" tabindex="-1"></paper-icon-button>
 
   </template>
 
@@ -354,6 +364,12 @@ Custom property | Description | Default
         }
       },
 
+      observers: [
+        '_setScrollButtonClass(_leftHidden, _rightHidden, scrollable, hideScrollButtons)',
+        '_setTabsContentClass(scrollable, fitContainer)',
+        '_setSelectionBarClass(noBar, alignBottom)',
+      ],
+
       hostAttributes: {
         role: 'tablist'
       },
@@ -398,30 +414,61 @@ Custom property | Description | Default
         element.removeAttribute('noink');
       },
 
-      _computeScrollButtonClass: function(hideThisButton, scrollable, hideScrollButtons) {
+      _setScrollButtonClass: function(_leftHidden, _rightHidden, scrollable, hideScrollButtons) {
+        var scrollButtonLeftClassList = this.$.scrollButtonLeft.classList;
+        var scrollButtonRightClassList = this.$.scrollButtonRight.classList;
+
         if (!scrollable || hideScrollButtons) {
-          return 'hidden';
+          scrollButtonLeftClassList.add('hidden');
+          scrollButtonRightClassList.add('hidden');
+        } else {
+          scrollButtonLeftClassList.remove('hidden');
+          scrollButtonRightClassList.remove('hidden');
         }
 
-        if (hideThisButton) {
-          return 'not-visible';
+        if (_leftHidden) {
+          scrollButtonLeftClassList.add('not-visible');
+        } else {
+          scrollButtonLeftClassList.remove('not-visible');
         }
 
-        return '';
+        if (_rightHidden) {
+          scrollButtonRightClassList.add('not-visible');
+        } else {
+          scrollButtonRightClassList.remove('not-visible');
+        }
       },
 
-      _computeTabsContentClass: function(scrollable, fitContainer) {
-        return scrollable ? 'scrollable' + (fitContainer ? ' fit-container' : '') : ' fit-container';
+      _setTabsContentClass: function(scrollable, fitContainer) {
+        var tabsContentClassList = this.$.tabsContent.classList;
+
+        tabsContentClassList.remove('scrollable');
+        tabsContentClassList.remove('fit-container');
+
+        if (scrollable) {
+          tabsContentClassList.add('scrollable');
+          if (fitContainer) {
+            tabsContentClassList.add('fit-container');
+          } else {
+            tabsContentClassList.remove('fit-container');
+          }
+        } else {
+          tabsContentClassList.remove('scrollable');
+          tabsContentClassList.remove('fit-container');
+        }
       },
 
-      _computeSelectionBarClass: function(noBar, alignBottom) {
+      _setSelectionBarClass: function(noBar, alignBottom) {
+        var selectionBarClassList = this.$.selectionBar.classList;
+
+        selectionBarClassList.remove('hidden');
+        selectionBarClassList.remove('align-bottom');
+
         if (noBar) {
-          return 'hidden';
+          selectionBarClassList.add('hidden');
         } else if (alignBottom) {
-          return 'align-bottom';
+          selectionBarClassList.add('align-bottom');
         }
-
-        return '';
       },
 
       // TODO(cdata): Add `track` response back in when gesture lands.

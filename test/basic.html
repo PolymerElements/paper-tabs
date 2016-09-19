@@ -53,7 +53,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       function checkSelectionBar(tabs, tab) {
         var tabRect = tab.getBoundingClientRect();
         var rect = Polymer.dom(tabs.root).querySelector('#selectionBar').getBoundingClientRect();
-        assert.equal(Math.round(tabRect.left), Math.round(rect.left));
+        assert.approximately(rect.left, tabRect.left, 1);
+        assert.approximately(rect.right, tabRect.right, 1);
       }
 
       suite('defaults', function() {
