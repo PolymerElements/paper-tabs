@@ -209,7 +209,12 @@ Custom property | Description | Default
       }
     </style>
 
-    <paper-icon-button icon="paper-tabs:chevron-left" class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown" tabindex="-1"></paper-icon-button>
+    <paper-icon-button
+      icon="paper-tabs:chevron-left"
+      class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]"
+      tabindex="-1"
+      on-click="_onLeftScrollButtonClick">
+    </paper-icon-button>
 
     <div id="tabsContainer" on-track="_scroll" on-down="_down">
       <div id="tabsContent" class$="[[_computeTabsContentClass(scrollable, fitContainer)]]">
@@ -219,7 +224,12 @@ Custom property | Description | Default
       </div>
     </div>
 
-    <paper-icon-button icon="paper-tabs:chevron-right" class$="[[_computeScrollButtonClass(_rightHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onRightScrollButtonDown" tabindex="-1"></paper-icon-button>
+    <paper-icon-button
+      icon="paper-tabs:chevron-right"
+      class$="[[_computeScrollButtonClass(_rightHidden, scrollable, hideScrollButtons)]]"
+      tabindex="-1"
+      on-click="_onRightScrollButtonClick">
+    </paper-icon-button>
 
   </template>
 
@@ -335,6 +345,17 @@ Custom property | Description | Default
           value: 1
         },
 
+        /**
+         * When an item is within this distance of being completely visible,
+         * pressing the arrow button in the direction that would make the item
+         * visible moves the item following it in that direction into view
+         * instead.
+         */
+        _arrowButtonNextItemThreshold: {
+          type: Number,
+          value: 10
+        },
+
         _leftHidden: {
           type: Boolean,
           value: false
@@ -366,7 +387,6 @@ Custom property | Description | Default
       },
 
       created: function() {
-        this._holdJob = null;
         this._pendingActivationItem = undefined;
         this._pendingActivationTimeout = undefined;
         this._bindDelayedActivationHandler = this._delayedActivationHandler.bind(this);
@@ -536,27 +556,38 @@ Custom property | Description | Default
         this._rightHidden = scrollLeft === this._tabContainerScrollSize;
       },
 
-      _onLeftScrollButtonDown: function() {
-        this._scrollToLeft();
-        this._holdJob = setInterval(this._scrollToLeft.bind(this), this._holdDelay);
+      _onLeftScrollButtonClick: function() {
+        var tabsContainer = this.$.tabsContainer;
+        var containerRect = tabsContainer.getBoundingClientRect();
+
+        // Find the right-most item with any area outside the left bound of the
+        // container.
+        for (var i = this.items.length - 1; i >= 0; i--) {
+          var itemRect = this.items[i].getBoundingClientRect();
+          if (containerRect.left - itemRect.left > this._arrowButtonNextItemThreshold) {
+            // Align left edges.
+            this._affectScroll(itemRect.left - containerRect.left);
+            break;
+          }
+        }
       },
 
-      _onRightScrollButtonDown: function() {
-        this._scrollToRight();
-        this._holdJob = setInterval(this._scrollToRight.bind(this), this._holdDelay);
-      },
+      _onRightScrollButtonClick: function() {
+        var tabsContainer = this.$.tabsContainer;
+        var containerRect = tabsContainer.getBoundingClientRect();
 
-      _onScrollButtonUp: function() {
-        clearInterval(this._holdJob);
-        this._holdJob = null;
-      },
-
-      _scrollToLeft: function() {
-        this._affectScroll(-this._step);
-      },
-
-      _scrollToRight: function() {
-        this._affectScroll(this._step);
+        // Find the left-most item with any area outside the right bound of the
+        // container.
+        for (var i = 0; i < this.items.length; i++) {
+          var itemRect = this.items[i].getBoundingClientRect();
+          // `.right` is measured positively from left to right from the left
+          // edge of the viewport, unlike CSS.
+          if (itemRect.right - containerRect.right > this._arrowButtonNextItemThreshold) {
+            // Align right edges.
+            this._affectScroll(itemRect.right - containerRect.right);
+            break;
+          }
+        }
       },
 
       _tabChanged: function(tab, old) {
