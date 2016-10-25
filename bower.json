@@ -35,7 +35,6 @@
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#2.0-preview",
     "iron-pages": "PolymerElements/iron-pages#2.0-preview",
     "iron-test-helpers": "PolymerElements/iron-test-helpers#2.0-preview",
-    "paper-toolbar": "PolymerElements/paper-toolbar#^1.0.0",
     "test-fixture": "PolymerElements/test-fixture#custom-elements-v1",
     "web-component-tester": "^4.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#v1"

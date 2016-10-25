@@ -23,7 +23,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
     <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
     <link rel="import" href="../../iron-pages/iron-pages.html">
-    <link rel="import" href="../../paper-toolbar/paper-toolbar.html">
+    <link rel="import" href="../../paper-styles/typography.html">
     <link rel="import" href="../paper-tab.html">
     <link rel="import" href="../paper-tabs.html">
 
@@ -33,7 +33,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           max-width: 600px;
         }
 
-        paper-tabs, paper-toolbar {
+        paper-tabs {
           background-color: var(--paper-blue-900);
           color: #fff;
         }
@@ -223,34 +223,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <a href="#item3" tabindex="-1">ITEM THREE</a>
             </paper-tab>
           </paper-tabs>
-        </template>
-      </demo-snippet>
-
-      <h3>
-        Tabs can be used in a <code>paper-toolbar</code>.
-      </h3>
-      <demo-snippet>
-        <template>
-          <custom-style>
-            <style is="custom-style">
-              paper-toolbar {
-                --paper-toolbar-background: var(--paper-blue-900);
-              }
-
-              .self-end {
-                /* This mixin (from iron-flex-layout) aligns the tabs to the
-                   bottom of the toolbar. */
-                @apply --layout-self-end;
-              }
-            </style>
-          </custom-style>
-
-          <paper-toolbar class="tall">
-            <paper-tabs selected="0" class="bottom self-end" style="width: 300px;">
-              <paper-tab>ITEM ONE</paper-tab>
-              <paper-tab>ITEM TWO</paper-tab>
-            </paper-tabs>
-          </paper-toolbar>
         </template>
       </demo-snippet>
 
