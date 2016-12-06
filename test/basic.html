@@ -114,8 +114,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test('choose the correct bar position once made visible', function() {
           tabs.removeAttribute('hidden');
           tabs.selected = 0;
-          expect(tabs._width).to.be.greaterThan(0);
-          expect(tabs._left).to.be.equal(0);
+          checkSelectionBar(tabs, tabs.items[0]);
         });
       });
 
