@@ -90,6 +90,8 @@ Custom property | Description | Default
 `--paper-tabs` | Mixin applied to the tabs | `{}`
 `--paper-tabs-content` | Mixin applied to the content container of tabs | `{}`
 `--paper-tabs-container` | Mixin applied to the layout container of tabs | `{}`
+`--paper-tabs-left-scroll` | Mixin applied to the left scroll button when tabs are scrollable | `{}`
+`--paper-tabs-right-scroll` | Mixin applied to the right scroll button when tabs are scrollable | `{}` 
 
 @hero hero.svg
 @demo demo/index.html
@@ -211,9 +213,17 @@ Custom property | Description | Default
       #tabsContent > ::content > *:not(#selectionBar) {
         height: 100%;
       }
+
+      #leftScrollButton {
+        @apply(--paper-tabs-left-scroll);		  
+      }
+
+      #rightScrollButton {
+        @apply(--paper-tabs-right-scroll);
+      }
     </style>
 
-    <paper-icon-button icon="paper-tabs:chevron-left" class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown" tabindex="-1"></paper-icon-button>
+    <paper-icon-button id="leftScrollButton" icon="paper-tabs:chevron-left" class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown" tabindex="-1"></paper-icon-button>
 
     <div id="tabsContainer" on-track="_scroll" on-down="_down">
       <div id="tabsContent" class$="[[_computeTabsContentClass(scrollable, fitContainer)]]">
@@ -223,7 +233,7 @@ Custom property | Description | Default
       </div>
     </div>
 
-    <paper-icon-button icon="paper-tabs:chevron-right" class$="[[_computeScrollButtonClass(_rightHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onRightScrollButtonDown" tabindex="-1"></paper-icon-button>
+    <paper-icon-button id="rightScrollButton" icon="paper-tabs:chevron-right" class$="[[_computeScrollButtonClass(_rightHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onRightScrollButtonDown" tabindex="-1"></paper-icon-button>
 
   </template>
 
