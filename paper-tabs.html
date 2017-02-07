@@ -9,7 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../iron-icon/iron-icon.html">
 <link rel="import" href="../iron-menu-behavior/iron-menubar-behavior.html">
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
@@ -88,8 +88,6 @@ Custom property | Description | Default
 `--paper-tabs-selection-bar-color` | Color for the selection bar | `--paper-yellow-a100`
 `--paper-tabs-selection-bar` | Mixin applied to the selection bar | `{}`
 `--paper-tabs` | Mixin applied to the tabs | `{}`
-`--paper-tabs-content` | Mixin applied to the content container of tabs | `{}`
-`--paper-tabs-container` | Mixin applied to the layout container of tabs | `{}`
 
 @hero hero.svg
 @demo demo/index.html
@@ -99,8 +97,12 @@ Custom property | Description | Default
   <template>
     <style>
       :host {
-        @apply(--layout);
-        @apply(--layout-center);
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -ms-flex-align: center;
+        -webkit-align-items: center;
+        align-items: center;
 
         height: 48px;
         font-size: 14px;
@@ -119,7 +121,12 @@ Custom property | Description | Default
       }
 
       :host-context([dir=rtl]) {
-        @apply(--layout-horizontal-reverse);
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -ms-flex-direction: row-reverse;
+        -webkit-flex-direction: row-reverse;
+        flex-direction: row-reverse;
       }
 
       #tabsContainer {
@@ -127,8 +134,9 @@ Custom property | Description | Default
         height: 100%;
         white-space: nowrap;
         overflow: hidden;
-        @apply(--layout-flex-auto);
-        @apply(--paper-tabs-container);
+        -ms-flex: 1 1 auto;
+        -webkit-flex: 1 1 auto;
+        flex: 1 1 auto;
       }
 
       #tabsContent {
@@ -136,7 +144,6 @@ Custom property | Description | Default
         -moz-flex-basis: auto;
         -ms-flex-basis: auto;
         flex-basis: auto;
-        @apply(--paper-tabs-content);
       }
 
       #tabsContent.scrollable {
@@ -146,7 +153,12 @@ Custom property | Description | Default
 
       #tabsContent:not(.scrollable),
       #tabsContent.scrollable.fit-container {
-        @apply(--layout-horizontal);
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -ms-flex-direction: row;
+        -webkit-flex-direction: row;
+        flex-direction: row;
       }
 
       #tabsContent.scrollable.fit-container {
