@@ -9,10 +9,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-behaviors/iron-button-state.html">
-<link rel="import" href="../iron-behaviors/iron-control-state.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../paper-behaviors/paper-ripple-behavior.html">
+<link rel="import" href="../paper-behaviors/paper-inky-focus-behavior.html">
 
 <!--
 `paper-tab` is styled to look like a tab.  It should be used in conjunction with
@@ -88,7 +86,6 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
       :host(:focus) .tab-content {
         opacity: 1;
-        font-weight: 700;
       }
 
       paper-ripple {
@@ -112,9 +109,7 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
       is: 'paper-tab',
 
       behaviors: [
-        Polymer.IronControlState,
-        Polymer.IronButtonState,
-        Polymer.PaperRippleBehavior
+        Polymer.PaperInkyFocusBehavior
       ],
 
       properties: {
@@ -169,8 +164,25 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
 
           anchor.click();
         }
-      }
+      },
 
+      _createRipple: function() {
+        var ripple = Polymer.PaperInkyFocusBehaviorImpl._createRipple();
+        ripple.removeAttribute('center');
+        ripple.classList.remove('circle');
+        return ripple;
+      },
+
+      _asyncClick: function() {
+        Polymer.IronButtonStateImpl._asyncClick.apply(this, arguments);
+        var ripple = this.getRipple();
+        if (ripple) {
+          var lastHoldDown = ripple.holdDown;
+          ripple.holdDown = false;
+          ripple.downAction();
+          ripple.holdDown = lastHoldDown;
+        }
+      },
     });
   </script>
 </dom-module>

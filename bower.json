@@ -19,7 +19,6 @@
     "url": "git://github.com/PolymerElements/paper-tabs.git"
   },
   "dependencies": {
-    "iron-behaviors": "PolymerElements/iron-behaviors#^1.0.0",
     "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.0.0",
     "iron-icon": "PolymerElements/iron-icon#^1.0.0",
     "iron-iconset-svg": "PolymerElements/iron-iconset-svg#^1.0.0",
