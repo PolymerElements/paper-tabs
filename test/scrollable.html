@@ -1,0 +1,147 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<html>
+  <head>
+
+    <title>paper-tabs-scrollable</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../paper-tabs.html">
+    
+  </head>
+  <body>
+
+    <test-fixture id="basic">
+      <template>
+        <paper-tabs>
+          <paper-tab>ITEM ONE</paper-tab>
+          <paper-tab>ITEM TWO</paper-tab>
+          <paper-tab>ITEM THREE</paper-tab>
+        </paper-tabs>
+      </template>
+    </test-fixture>
+    
+     <test-fixture id="scrollable">
+      <template>
+        <paper-tabs scrollable style="width: 500px;">
+          <paper-tab style="width: 150px">ITEM ONE</paper-tab>
+          <paper-tab style="width: 150px">ITEM TWO</paper-tab>
+          <paper-tab style="width: 150px">ITEM THREE</paper-tab>
+          <paper-tab style="width: 150px">ITEM FOUR</paper-tab>
+        </paper-tabs>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="zoomed">
+      <template>
+        <paper-tabs scrollable style="width: 500px;zoom: 1.1;">
+          <paper-tab style="width: 150px">ITEM ONE</paper-tab>
+          <paper-tab style="width: 150px">ITEM TWO</paper-tab>
+          <paper-tab style="width: 150px">ITEM THREE</paper-tab>
+          <paper-tab style="width: 150px">ITEM FOUR</paper-tab>
+        </paper-tabs>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('scrollables suite', function() {
+      	
+    	var tabs, tabsContainer, leftScrollbutton, rightScrollbutton;
+      
+        suite('non-scrollable paper-tabs', function() {
+  
+          setup(function () {
+            tabs = fixture('basic');
+            leftScrollbutton = Polymer.dom(tabs.root).querySelectorAll('paper-icon-button')[0];
+            rightScrollbutton = Polymer.dom(tabs.root).querySelectorAll('paper-icon-button')[1];
+            tabsContainer = tabs.$.tabsContainer;
+          });
+          
+          test('have no scrollbuttons', function() {
+            assert.isTrue(leftScrollbutton.offsetWidth===0);
+            assert.isTrue(rightScrollbutton.offsetWidth===0);
+          });
+  
+        });
+      
+        suite('scrollable paper-tabs', function() {
+  
+          setup(function () {
+            tabs = fixture('scrollable');
+            leftScrollbutton = Polymer.dom(tabs.root).querySelectorAll('paper-icon-button')[0];
+            rightScrollbutton = Polymer.dom(tabs.root).querySelectorAll('paper-icon-button')[1];
+            tabsContainer = tabs.$.tabsContainer;
+          });
+  
+          test('have scrollbuttons', function() {
+            assert.isTrue(leftScrollbutton.offsetWidth>0);
+            assert.isTrue(rightScrollbutton.offsetWidth>0);
+          });
+          
+          test('when scroll-offset is 0, then the left scrollbutton is faded out', function(done) {
+         	  
+            Polymer.Base.async(function() {
+              assert.equal(tabsContainer.scrollLeft, 0);
+              assert.isTrue(leftScrollbutton.classList.contains('not-visible'));
+              assert.isFalse(rightScrollbutton.classList.contains('not-visible'));
+              done();
+            }, 100);
+          	
+          });
+          
+          test('when scroll-offset is \'max\', then the right scrollbutton is faded out', function(done) {
+            //Set scrollLeft to a very high number. Will scroll to outermost position.
+            tabsContainer.scrollLeft = 99999;
+       	  
+            Polymer.Base.async(function() {
+              assert.isFalse(leftScrollbutton.classList.contains('not-visible'));
+              assert.isTrue(rightScrollbutton.classList.contains('not-visible'));
+              done();
+            }, 100);
+            	
+          });
+          
+        });
+  
+        suite('zoomed, scrollable paper-tabs', function() {
+  		
+          setup(function () {
+            tabs = fixture('zoomed');
+            leftScrollbutton = Polymer.dom(tabs.root).querySelectorAll('paper-icon-button')[0];
+            rightScrollbutton = Polymer.dom(tabs.root).querySelectorAll('paper-icon-button')[1];
+            tabsContainer = tabs.$.tabsContainer;
+          });
+  
+          test('the right scrollbutton is faded out, even if scrolloffset is fractional due to zoom', function(done) {
+            //Set scrollLeft to a very high number. Will scroll to outermost position.
+            tabsContainer.scrollLeft = 99999;
+            //Using Zoom-Fixture will let tabsContainer.scrollLeft become fractional in certain browsers (i.e. Chrome)
+       	  
+            Polymer.Base.async(function() {
+              assert.isFalse(leftScrollbutton.classList.contains('not-visible'));
+              assert.isTrue(rightScrollbutton.classList.contains('not-visible'));
+              done();
+            }, 100);
+              	
+          });
+          
+        });
+    
+      });
+    </script>
+
+  </body>
+</html>
