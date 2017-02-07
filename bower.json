@@ -3,7 +3,6 @@
   "version": "1.8.0",
   "license": "http://polymer.github.io/LICENSE.txt",
   "description": "Material design tabs",
-  "private": true,
   "main": "paper-tabs.html",
   "authors": [
     "The Polymer Authors"
