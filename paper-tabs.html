@@ -216,7 +216,7 @@ Custom property | Description | Default
 
     <paper-icon-button icon="paper-tabs:chevron-left" class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown" tabindex="-1"></paper-icon-button>
 
-    <div id="tabsContainer" on-track="_onTrack" on-wheel="_onWheel" on-down="_down">
+    <div id="tabsContainer" on-track="_scroll" on-wheel="_onWheel" on-down="_down">
       <div id="tabsContent" class$="[[_computeTabsContentClass(scrollable, fitContainer)]]">
         <div id="selectionBar" class$="[[_computeSelectionBarClass(noBar, alignBottom)]]"
             on-transitionend="_onBarTransitionEnd"></div>
@@ -591,12 +591,13 @@ Custom property | Description | Default
           return this._cachedRTL !== undefined ? this._cachedRTL : this._isRTL;
         },
 
-        _onTrack: function(e, detail) {
-          if (!this.scrollable) return;
-
-          if (detail && detail.ddx !== undefined) {
-            this._affectScroll(-detail.ddx);
+        _scroll: function(e, detail) {
+          if (!this.scrollable) {
+            return;
           }
+
+          var ddx = (detail && -detail.ddx) || 0;
+          this._affectScroll(ddx);
         },
 
         _onWheel: function(e) {
