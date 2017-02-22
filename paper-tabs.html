@@ -575,42 +575,14 @@ Custom property | Description | Default
           }, 1);
         },
 
-        _updateScrollButtonsHiddenState: function() {
-          var normalizedLeft =
-            this._scrollLeftToNormalizedLeft(this.$.tabsContainer.scrollLeft);
-
-          this._leftHidden = normalizedLeft <= 0;
-          this._rightHidden = normalizedLeft >= this._tabContainerScrollSize;
-        },
-
         /**
-         * Normalizes a value returned by `scrollLeft`, which can be writing
-         * direction dependent, to its LTR equivalent.
+         * Adjusts `scrollLeft` by a relative amount, with positive values
+         * scrolling into view content hidden to the right (LTR-like),
+         * regardless of the element's current directionality.
          */
-        _scrollLeftToNormalizedLeft: function(scrollLeft) {
-          if (this._getRTL()) {
-            var normalizedLeft = scrollLeft;
-            normalizedLeft *= this.__rtlPositiveLeft ? -1 : 1;
-            normalizedLeft += this.__rtlZeroRight ? this._tabContainerScrollSize : 0;
-            return normalizedLeft;
-          } else {
-            return scrollLeft;
-          }
-        },
-
-        /**
-         * Converts normalized (LTR-like) `scrollLeft` values to the browser
-         * specific value based on the element's current directionality.
-         */
-        _normalizedLeftToScrollLeft: function(normalizedLeft) {
-          if (this._getRTL()) {
-            var scrollLeft = normalizedLeft;
-            scrollLeft -= this.__rtlZeroRight ? this._tabContainerScrollSize : 0;
-            scrollLeft *= this.__rtlPositiveLeft ? -1 : 1;
-            return scrollLeft;
-          } else {
-            return normalizedLeft;
-          }
+        _affectScroll: function(dx) {
+          this.$.tabsContainer.scrollLeft += (this._getRTL() && this.__rtlPositiveLeft ? -1 : 1) * dx;
+          this._updateScrollButtonsHiddenState();
         },
 
         /**
@@ -622,14 +594,12 @@ Custom property | Description | Default
           this._updateScrollButtonsHiddenState();
         },
 
-        /**
-         * Adjusts `scrollLeft` by a relative amount, with positive values
-         * scrolling into view content hidden to the right (LTR-like),
-         * regardless of the element's current directionality.
-         */
-        _affectScroll: function(dx) {
-          this.$.tabsContainer.scrollLeft += (this._getRTL() && this.__rtlPositiveLeft ? -1 : 1) * dx;
-          this._updateScrollButtonsHiddenState();
+        _updateScrollButtonsHiddenState: function() {
+          var normalizedLeft =
+            this._scrollLeftToNormalizedLeft(this.$.tabsContainer.scrollLeft);
+
+          this._leftHidden = normalizedLeft <= 0;
+          this._rightHidden = normalizedLeft >= this._tabContainerScrollSize;
         },
 
         _onLeftScrollButtonDown: function() {
@@ -748,6 +718,36 @@ Custom property | Description | Default
           // bar animation done
           } else if (cl.contains('contract')) {
             cl.remove('contract');
+          }
+        },
+
+        /**
+         * Normalizes a value returned by `scrollLeft`, which can be writing
+         * direction dependent, to its LTR equivalent.
+         */
+        _scrollLeftToNormalizedLeft: function(scrollLeft) {
+          if (this._getRTL()) {
+            var normalizedLeft = scrollLeft;
+            normalizedLeft *= this.__rtlPositiveLeft ? -1 : 1;
+            normalizedLeft += this.__rtlZeroRight ? this._tabContainerScrollSize : 0;
+            return normalizedLeft;
+          } else {
+            return scrollLeft;
+          }
+        },
+
+        /**
+         * Converts normalized (LTR-like) `scrollLeft` values to the browser
+         * specific value based on the element's current directionality.
+         */
+        _normalizedLeftToScrollLeft: function(normalizedLeft) {
+          if (this._getRTL()) {
+            var scrollLeft = normalizedLeft;
+            scrollLeft -= this.__rtlZeroRight ? this._tabContainerScrollSize : 0;
+            scrollLeft *= this.__rtlPositiveLeft ? -1 : 1;
+            return scrollLeft;
+          } else {
+            return normalizedLeft;
           }
         },
 
