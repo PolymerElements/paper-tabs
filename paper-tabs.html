@@ -236,7 +236,9 @@ Custom property | Description | Default
       // (As opposed to LTR, where `scrollLeft` is zero when when the left edge
       // of the scrollable area is aligned with the left edge of its overflowing
       // content.)
-      var RTL_ZERO_RIGHT = false;
+      // This variable is determined and set in `__checkRTLBehavior` the first
+      // time `__rtlZeroRight` or `__rtlPositiveLeft` is read.
+      var RTL_ZERO_RIGHT = undefined;
 
       // True if, when an element has RTL directionality, positive changes to
       // `scrollLeft` cause the scrollable area to show content that is further
@@ -244,70 +246,9 @@ Custom property | Description | Default
       // (As opposed to LTR, where positive changes to `scrollLeft` cause the
       // scrollable area to show overflowing content that is further to the
       // right.)
-      var RTL_POSITIVE_LEFT = false;
-
-      var SCROLLBAR_HEIGHT = 16;
-
-      (function() {
-        function testRTLScrollLeftBehavior() {
-          var outer = document.createElement('div');
-          outer.setAttribute('dir', 'rtl');
-          outer.style.position = 'absolute';
-          outer.style.width = '50px';
-          outer.style.height = '50px';
-          outer.style.overflow = 'hidden';
-
-          var inner = document.createElement('div');
-          inner.style.width = '100px';
-          inner.style.height = '100px';
-          outer.appendChild(inner);
-
-          document.body.appendChild(outer);
-
-          // Is this container's non-zero-edge alignment represented by a
-          // positive or negative value? (Are we able to scroll to a negative
-          // value when the only overflowing content is positioned positively?)
-          outer.scrollLeft = -10000;
-          var fullScrollNegative = outer.scrollLeft < 0;
-
-          // Are the right edges of the container and its overflowing content
-          // aligned when `scrollLeft` is zero? (The overflowing content is
-          // larger than the container, so only one set of edges can be
-          // aligned.)
-          outer.scrollLeft = 0;
-          var innerStartRect = inner.getBoundingClientRect();
-          var outerStartRect = outer.getBoundingClientRect();
-          RTL_ZERO_RIGHT = innerStartRect.right === outerStartRect.right;
-
-          // Scroll to the end of the scrollable area in the available non-zero
-          // direction.
-          outer.scrollLeft += (fullScrollNegative ? -1 : 1) * 10000;
-          var innerEndRect = inner.getBoundingClientRect();
-
-          // If the change made to `scrollLeft` and the amount by which its
-          // overflowing content's bounding box moved have matching signs, then
-          // left is the positive direction.
-          var contentMovementNegative = innerEndRect.left < innerStartRect.left;
-          RTL_POSITIVE_LEFT = fullScrollNegative === contentMovementNegative;
-
-          outer.style.overflow = 'scroll';
-          SCROLLBAR_HEIGHT = outer.offsetHeight - outer.clientHeight;
-
-          document.body.removeChild(outer);
-        };
-
-        // Wait for the load event if necessary, otherwise
-        // `getBoundingClientRect` will only return rectangles with all values
-        // set to zero.
-        if (document.readyState === 'complete') {
-          testRTLScrollLeftBehavior();
-        } else {
-          window.addEventListener('load', function onLoad() {
-            window.removeEventListener('load', onLoad);
-            testRTLScrollLeftBehavior();
-          });
-        }
-      })();
+      // This variable is determined and set in `__checkRTLBehavior` the first
+      // time `__rtlZeroRight` or `__rtlPositiveLeft` is read.
+      var RTL_POSITIVE_LEFT = undefined;
 
       Polymer({
         is: 'paper-tabs',
@@ -649,8 +590,8 @@ Custom property | Description | Default
         _scrollLeftToNormalizedLeft: function(scrollLeft) {
           if (this._getRTL()) {
             var normalizedLeft = scrollLeft;
-            normalizedLeft *= RTL_POSITIVE_LEFT ? -1 : 1;
-            normalizedLeft += RTL_ZERO_RIGHT ? this._tabContainerScrollSize : 0;
+            normalizedLeft *= this.__rtlPositiveLeft ? -1 : 1;
+            normalizedLeft += this.__rtlZeroRight ? this._tabContainerScrollSize : 0;
             return normalizedLeft;
           } else {
             return scrollLeft;
@@ -664,8 +605,8 @@ Custom property | Description | Default
         _normalizedLeftToScrollLeft: function(normalizedLeft) {
           if (this._getRTL()) {
             var scrollLeft = normalizedLeft;
-            scrollLeft -= RTL_ZERO_RIGHT ? this._tabContainerScrollSize : 0;
-            scrollLeft *= RTL_POSITIVE_LEFT ? -1 : 1;
+            scrollLeft -= this.__rtlZeroRight ? this._tabContainerScrollSize : 0;
+            scrollLeft *= this.__rtlPositiveLeft ? -1 : 1;
             return scrollLeft;
           } else {
             return normalizedLeft;
@@ -687,7 +628,7 @@ Custom property | Description | Default
          * regardless of the element's current directionality.
          */
         _affectScroll: function(dx) {
-          this.$.tabsContainer.scrollLeft += (this._getRTL() && RTL_POSITIVE_LEFT ? -1 : 1) * dx;
+          this.$.tabsContainer.scrollLeft += (this._getRTL() && this.__rtlPositiveLeft ? -1 : 1) * dx;
           this._updateScrollButtonsHiddenState();
         },
 
@@ -808,7 +749,67 @@ Custom property | Description | Default
           } else if (cl.contains('contract')) {
             cl.remove('contract');
           }
-        }
+        },
+
+        get __rtlZeroRight() {
+          if (RTL_ZERO_RIGHT === undefined) {
+            this.__checkRTLBehavior();
+          }
+
+          return RTL_ZERO_RIGHT;
+        },
+
+        get __rtlPositiveLeft() {
+          if (RTL_POSITIVE_LEFT === undefined) {
+            this.__checkRTLBehavior();
+          }
+
+          return RTL_POSITIVE_LEFT;
+        },
+
+        __checkRTLBehavior: function() {
+          var outer = document.createElement('div');
+          outer.setAttribute('dir', 'rtl');
+          outer.style.position = 'absolute';
+          outer.style.width = '50px';
+          outer.style.height = '50px';
+          outer.style.overflow = 'hidden';
+
+          var inner = document.createElement('div');
+          inner.style.width = '100px';
+          inner.style.height = '100px';
+          outer.appendChild(inner);
+
+          document.body.appendChild(outer);
+
+          // Is this container's non-zero-edge alignment represented by a
+          // positive or negative value? (Are we able to scroll to a negative
+          // value when the only overflowing content is positioned positively?)
+          outer.scrollLeft = -10000;
+          var fullScrollNegative = outer.scrollLeft < 0;
+
+          // Are the right edges of the container and its overflowing content
+          // aligned when `scrollLeft` is zero? (The overflowing content is
+          // larger than the container, so only one set of edges can be
+          // aligned.)
+          outer.scrollLeft = 0;
+          var innerStartRect = inner.getBoundingClientRect();
+          var outerStartRect = outer.getBoundingClientRect();
+          RTL_ZERO_RIGHT = innerStartRect.right === outerStartRect.right;
+
+          // Scroll to the end of the scrollable area in the available non-zero
+          // direction.
+          outer.scrollLeft += (fullScrollNegative ? -1 : 1) * 10000;
+          var innerEndRect = inner.getBoundingClientRect();
+
+          // If the change made to `scrollLeft` and the amount by which its
+          // overflowing content's bounding box moved have matching signs, then
+          // left is the positive direction.
+          var contentMovementNegative = innerEndRect.left < innerStartRect.left;
+          RTL_POSITIVE_LEFT = fullScrollNegative === contentMovementNegative;
+
+          document.body.removeChild(outer);
+        },
       });
     })();
   </script>
