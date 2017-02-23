@@ -370,26 +370,6 @@ Custom property | Description | Default
         'left:keyup right:keyup': '_onArrowKeyup'
       },
 
-      registered: function() {
-        // True if, when an element has RTL directionality, `scrollLeft` is
-        // zero when the right edge of the scrollable area is aligned with the
-        // right edge of its overflowing content. (As opposed to LTR, where
-        // `scrollLeft` is zero when when the left edge of the scrollable area
-        // is aligned with the left edge of its overflowing content.)
-        // This variable is determined and set in `__checkRTLBehavior` the
-        // first time `__rtlZeroRight` or `__rtlPositiveLeft` is read.
-        this.__rtlZeroRight = undefined;
-
-        // True if, when an element has RTL directionality, positive changes
-        // to `scrollLeft` cause the scrollable area to show content that is
-        // further to the left. (As opposed to LTR, where positive changes to
-        // `scrollLeft` cause the scrollable area to show overflowing content
-        // that is further to the right.)
-        // This variable is determined and set in `__checkRTLBehavior` the
-        // first time `__rtlZeroRight` or `__rtlPositiveLeft` is read.
-        this.__rtlPositiveLeft = undefined;
-      },
-
       created: function() {
         this._holdJob = null;
         this._pendingActivationItem = undefined;
@@ -563,7 +543,7 @@ Custom property | Description | Default
         if (scrollFactor !== 0) {
           e.preventDefault();
           this._affectScroll(e.deltaX * scrollFactor);
-          this._updateScrollButtonsHiddenState();
+          this.__updateScrollButtonsHiddenState();
         }
       },
 
@@ -754,24 +734,61 @@ Custom property | Description | Default
         }
       },
 
+      /**
+       * Computes (if needed) and returns `__rtlZeroRight`. See below for a
+       * description of this value.
+       */
       __getRTLZeroRight: function() {
-        if (this.__rtlZeroRight === undefined) {
+        var __rtlBehavior = this.__rtlBehavior;
+        if (__rtlBehavior.__rtlZeroRight === undefined) {
           this.__checkRTLBehavior();
         }
 
-        return this.__rtlZeroRight;
+        return __rtlBehavior.__rtlZeroRight;
       },
 
+      /**
+       * Computes (if needed) and returns `__rtlPositiveLeft`. See below for a
+       * description of this value.
+       */
       __getRTLPositiveLeft: function() {
-        if (this.__rtlPositiveLeft === undefined) {
+        var __rtlBehavior = this.__rtlBehavior;
+        if (__rtlBehavior.__rtlPositiveLeft === undefined) {
           this.__checkRTLBehavior();
         }
 
-        return this.__rtlPositiveLeft;
+        return __rtlBehavior.__rtlPositiveLeft;
       },
 
+      // These properties are nested in this object so that the object reference
+      // is copied to each instance in IE10, where the prototype of an object
+      // can't be changed after it is created.
+      __rtlBehavior: {
+        // True if, when an element has RTL directionality, `scrollLeft` is
+        // zero when the right edge of the scrollable area is aligned with the
+        // right edge of its overflowing content. (As opposed to LTR, where
+        // `scrollLeft` is zero when when the left edge of the scrollable area
+        // is aligned with the left edge of its overflowing content.)
+        // This variable is determined and set in `__checkRTLBehavior` the
+        // first time `__rtlZeroRight` or `__rtlPositiveLeft` is read.
+        __rtlZeroRight: undefined,
+
+        // True if, when an element has RTL directionality, positive changes
+        // to `scrollLeft` cause the scrollable area to show content that is
+        // further to the left. (As opposed to LTR, where positive changes to
+        // `scrollLeft` cause the scrollable area to show overflowing content
+        // that is further to the right.)
+        // This variable is determined and set in `__checkRTLBehavior` the
+        // first time `__rtlZeroRight` or `__rtlPositiveLeft` is read.
+        __rtlPositiveLeft: undefined,
+      },
+
+      /**
+       * Computes the browser's `scrollLeft` behavior for elements with RTL
+       * directionality.
+       */
       __checkRTLBehavior: function() {
-        var prototype = Object.getPrototypeOf(this);
+        var __rtlBehavior = this.__rtlBehavior;
 
         var outer = document.createElement('div');
         outer.setAttribute('dir', 'rtl');
@@ -800,7 +817,7 @@ Custom property | Description | Default
         outer.scrollLeft = 0;
         var innerStartRect = inner.getBoundingClientRect();
         var outerStartRect = outer.getBoundingClientRect();
-        prototype.__rtlZeroRight = innerStartRect.right === outerStartRect.right;
+        __rtlBehavior.__rtlZeroRight = innerStartRect.right === outerStartRect.right;
 
         // Scroll to the end of the scrollable area in the available non-zero
         // direction.
@@ -811,7 +828,7 @@ Custom property | Description | Default
         // overflowing content's bounding box moved have matching signs, then
         // left is the positive direction.
         var contentMovementNegative = innerEndRect.left < innerStartRect.left;
-        prototype.__rtlPositiveLeft = fullScrollNegative === contentMovementNegative;
+        __rtlBehavior.__rtlPositiveLeft = fullScrollNegative === contentMovementNegative;
 
         document.body.removeChild(outer);
       },
