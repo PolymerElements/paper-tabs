@@ -126,10 +126,26 @@ Custom property | Description | Default
         position: relative;
         height: 100%;
         white-space: nowrap;
-        overflow: hidden;
+        /*
+        Fall back to scrollbars; `overflow` can't be `hidden` because it
+        disables native scrolling.
+        */
+        overflow: scroll;
+        /* Hide scrollbars in Firefox. */
+        overflow: -moz-scrollbars-none;
+        /* Hide scrollbars in Edge and IE. */
+        -ms-overflow-style: none;
+        /* Enable scrolling inertia in mobile Safari. */
         -webkit-overflow-scrolling: touch;
         @apply(--layout-flex-auto);
         @apply(--paper-tabs-container);
+      }
+
+      /* Hide scrollbars in Chrome and Safari. */
+      #tabsContainer::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+        background: transparent;
       }
 
       #tabsContent {
@@ -525,26 +541,7 @@ Custom property | Description | Default
       },
 
       _onWheel: function(e) {
-        if (e.deltaX === 0) return;
-
-        var scrollFactor = 0;
-        switch (e.deltaMode) {
-          case WheelEvent.DOM_DELTA_PIXEL:
-            scrollFactor = 1;
-          break;
-          case WheelEvent.DOM_DELTA_LINE:
-            scrollFactor = parseFloat(getComputedStyle(this).fontSize);
-          break;
-          case WheelEvent.DOM_DELTA_PAGE:
-            scrollFactor = this.$.tabsContainer.getBoundingClientRect().width;
-          break;
-        }
-
-        if (scrollFactor !== 0) {
-          e.preventDefault();
-          this._affectScroll(e.deltaX * scrollFactor);
-          this.__updateScrollButtonsHiddenState();
-        }
+        this.__updateScrollButtonsHiddenState();
       },
 
       _down: function(e) {
