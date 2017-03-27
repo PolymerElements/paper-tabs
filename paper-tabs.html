@@ -126,26 +126,9 @@ Custom property | Description | Default
         position: relative;
         height: 100%;
         white-space: nowrap;
-        /*
-        Fall back to scrollbars; `overflow` can't be `hidden` because it
-        disables native scrolling.
-        */
-        overflow: scroll;
-        /* Hide scrollbars in Firefox. */
-        overflow: -moz-scrollbars-none;
-        /* Hide scrollbars in Edge and IE. */
-        -ms-overflow-style: none;
-        /* Enable scrolling inertia in mobile Safari. */
-        -webkit-overflow-scrolling: touch;
+        overflow: hidden;
         @apply(--layout-flex-auto);
         @apply(--paper-tabs-container);
-      }
-
-      /* Hide scrollbars in Chrome and Safari. */
-      #tabsContainer::-webkit-scrollbar {
-        width: 0px;
-        height: 0px;
-        background: transparent;
       }
 
       #tabsContent {
@@ -232,7 +215,7 @@ Custom property | Description | Default
 
     <paper-icon-button icon="paper-tabs:chevron-left" class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown" tabindex="-1"></paper-icon-button>
 
-    <div id="tabsContainer" on-track="_scroll" on-scroll="_onScroll" on-down="_down">
+    <div id="tabsContainer" on-track="_scroll" on-down="_down">
       <div id="tabsContent" class$="[[_computeTabsContentClass(scrollable, fitContainer)]]">
         <div id="selectionBar" class$="[[_computeSelectionBarClass(noBar, alignBottom)]]"
             on-transitionend="_onBarTransitionEnd"></div>
@@ -540,10 +523,6 @@ Custom property | Description | Default
         this._affectScroll(ddx);
       },
 
-      _onScroll: function(e) {
-        this.__updateScrollButtonsHiddenState();
-      },
-
       _down: function(e) {
         // go one beat async to defeat IronMenuBehavior
         // autorefocus-on-no-selection timeout
@@ -611,6 +590,7 @@ Custom property | Description | Default
           this.$.selectionBar.classList.remove('expand');
           this.$.selectionBar.classList.remove('contract');
           this._positionBar(0, 0);
+          this.__updateScrollButtonsHiddenState();
           return;
         }
 
