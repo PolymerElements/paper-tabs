@@ -732,29 +732,29 @@ Custom property | Description | Default
       },
 
       /**
-       * Computes (if needed) and returns `__rtlZeroRight`. See below for a
+       * Computes (if needed) and returns `zeroRight`. See below for a
        * description of this value.
        */
       __getRTLZeroRight: function() {
         var __rtlBehavior = this.__rtlBehavior;
-        if (__rtlBehavior.__rtlZeroRight === undefined) {
+        if (__rtlBehavior.zeroRight === undefined) {
           this.__checkRTLBehavior();
         }
 
-        return __rtlBehavior.__rtlZeroRight;
+        return __rtlBehavior.zeroRight;
       },
 
       /**
-       * Computes (if needed) and returns `__rtlPositiveLeft`. See below for a
+       * Computes (if needed) and returns `positiveLeft`. See below for a
        * description of this value.
        */
       __getRTLPositiveLeft: function() {
         var __rtlBehavior = this.__rtlBehavior;
-        if (__rtlBehavior.__rtlPositiveLeft === undefined) {
+        if (__rtlBehavior.positiveLeft === undefined) {
           this.__checkRTLBehavior();
         }
 
-        return __rtlBehavior.__rtlPositiveLeft;
+        return __rtlBehavior.positiveLeft;
       },
 
       // These properties are nested in this object so that the object reference
@@ -767,8 +767,8 @@ Custom property | Description | Default
         // `scrollLeft` is zero when when the left edge of the scrollable area
         // is aligned with the left edge of its overflowing content.)
         // This variable is determined and set in `__checkRTLBehavior` the
-        // first time `__rtlZeroRight` or `__rtlPositiveLeft` is read.
-        __rtlZeroRight: undefined,
+        // first time `zeroRight` or `positiveLeft` is read.
+        zeroRight: undefined,
 
         // True if, when an element has RTL directionality, positive changes
         // to `scrollLeft` cause the scrollable area to show content that is
@@ -776,8 +776,8 @@ Custom property | Description | Default
         // `scrollLeft` cause the scrollable area to show overflowing content
         // that is further to the right.)
         // This variable is determined and set in `__checkRTLBehavior` the
-        // first time `__rtlZeroRight` or `__rtlPositiveLeft` is read.
-        __rtlPositiveLeft: undefined,
+        // first time `zeroRight` or `positiveLeft` is read.
+        positiveLeft: undefined,
       },
 
       /**
@@ -814,7 +814,7 @@ Custom property | Description | Default
         outer.scrollLeft = 0;
         var innerStartRect = inner.getBoundingClientRect();
         var outerStartRect = outer.getBoundingClientRect();
-        __rtlBehavior.__rtlZeroRight = innerStartRect.right === outerStartRect.right;
+        __rtlBehavior.zeroRight = innerStartRect.right === outerStartRect.right;
 
         // Scroll to the end of the scrollable area in the available non-zero
         // direction.
@@ -825,7 +825,7 @@ Custom property | Description | Default
         // overflowing content's bounding box moved have matching signs, then
         // left is the positive direction.
         var contentMovementNegative = innerEndRect.left < innerStartRect.left;
-        __rtlBehavior.__rtlPositiveLeft = fullScrollNegative === contentMovementNegative;
+        __rtlBehavior.positiveLeft = fullScrollNegative === contentMovementNegative;
 
         document.body.removeChild(outer);
       },
