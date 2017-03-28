@@ -594,14 +594,15 @@ Custom property | Description | Default
           return;
         }
 
-        var r = this.$.tabsContent.getBoundingClientRect();
-        var w = r.width;
+        var scrollContentRect = this.$.tabsContent.getBoundingClientRect();
+        var scrollContentWidth = scrollContentRect.width;
         var tabRect = tab.getBoundingClientRect();
-        var tabOffsetLeft = tabRect.left - r.left;
+        var tabOffsetLeft = tabRect.left - scrollContentRect.left;
 
+        // The final position of the bar, below the newly selected tab.
         this._pos = {
-          width: this._calcPercent(tabRect.width, w),
-          left: this._calcPercent(tabOffsetLeft, w)
+          width: this._calcPercent(tabRect.width, scrollContentWidth),
+          left: this._calcPercent(tabOffsetLeft, scrollContentWidth)
         };
 
         if (this.noSlide || old == null) {
@@ -611,26 +612,17 @@ Custom property | Description | Default
           this._positionBar(this._pos.width, this._pos.left);
         } else {
           var oldRect = old.getBoundingClientRect();
-          var oldIndex = this.items.indexOf(old);
-          var index = this.items.indexOf(tab);
-          var m = 5;
+          var oldOffsetLeft = oldRect.left - scrollContentRect.left;
+          var left = Math.min(tabRect.left, oldRect.left);
+          var right = Math.max(tabRect.right, oldRect.right);
+          var expandedPadding = 0.05;
+          var expandedWidth = (1 - 2 * expandedPadding) * (right - left);
+          var expandedLeft = (left - scrollContentRect.left) + expandedPadding * (right - left);
+          var expandedWidthPercent = this._calcPercent(expandedWidth, scrollContentWidth);
+          var expandedLeftPercent = this._calcPercent(expandedLeft, scrollContentWidth);
 
-          // bar animation: expand
           this.$.selectionBar.classList.add('expand');
-
-          var moveRight = oldIndex < index;
-          var isRTL = this.__getRTL();
-          if (isRTL) {
-            moveRight = !moveRight;
-          }
-
-          if (moveRight) {
-            this._positionBar(this._calcPercent(tabRect.left + tabRect.width - oldRect.left, w) - m,
-                this._left);
-          } else {
-            this._positionBar(this._calcPercent(oldRect.left + oldRect.width - tabRect.left, w) - m,
-                this._calcPercent(tabOffsetLeft, w) + m);
-          }
+          this._positionBar(expandedWidthPercent, expandedLeftPercent);
         }
 
         if (this.scrollable) {
@@ -720,7 +712,6 @@ Custom property | Description | Default
         if (__rtlBehavior.zeroRight === undefined) {
           this.__checkRTLBehavior();
         }
-
         return __rtlBehavior.zeroRight;
       },
 
@@ -733,7 +724,6 @@ Custom property | Description | Default
         if (__rtlBehavior.positiveLeft === undefined) {
           this.__checkRTLBehavior();
         }
-
         return __rtlBehavior.positiveLeft;
       },
 
