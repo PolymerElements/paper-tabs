@@ -612,17 +612,21 @@ Custom property | Description | Default
           this._positionBar(this._pos.width, this._pos.left);
         } else {
           var oldRect = old.getBoundingClientRect();
-          var oldOffsetLeft = oldRect.left - scrollContentRect.left;
-          var left = Math.min(tabRect.left, oldRect.left);
-          var right = Math.max(tabRect.right, oldRect.right);
-          var expandedPadding = 0.05;
-          var expandedWidth = (1 - 2 * expandedPadding) * (right - left);
-          var expandedLeft = (left - scrollContentRect.left) + expandedPadding * (right - left);
-          var expandedWidthPercent = this._calcPercent(expandedWidth, scrollContentWidth);
-          var expandedLeftPercent = this._calcPercent(expandedLeft, scrollContentWidth);
+
+          var minLeft = Math.min(tabRect.left, oldRect.left);
+          var maxRight = Math.max(tabRect.right, oldRect.right);
+          var totalWidth = maxRight - minLeft;
+
+          // The padding around both sides of the selection bar in the
+          // mid-transition expanded state, in units of `totalWidth`.
+          var padding = 0.05;
+          var targetWidth = (1 - 2 * padding) * totalWidth;
+          var targetLeft = (minLeft - scrollContentRect.left) + padding * totalWidth;
 
           this.$.selectionBar.classList.add('expand');
-          this._positionBar(expandedWidthPercent, expandedLeftPercent);
+          var targetWidthPercent = this._calcPercent(targetWidth, scrollContentWidth);
+          var targetLeftPercent = this._calcPercent(targetLeft, scrollContentWidth);
+          this._positionBar(targetWidthPercent, targetLeftPercent);
         }
 
         if (this.scrollable) {
