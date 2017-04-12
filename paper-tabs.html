@@ -61,8 +61,8 @@ Example:
 <pre><code>
 &lt;style is="custom-style">
   .link {
-    &#64;apply(--layout-horizontal);
-    &#64;apply(--layout-center-center);
+    &#64;apply --layout-horizontal;
+    &#64;apply --layout-center-center;
   }
 &lt;/style>
 
@@ -136,7 +136,7 @@ Custom property | Description | Default
         -moz-flex-basis: auto;
         -ms-flex-basis: auto;
         flex-basis: auto;
-        @apply(--paper-tabs-content);
+        @apply --paper-tabs-content;
       }
 
       #tabsContent.scrollable {
