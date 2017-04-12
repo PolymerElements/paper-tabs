@@ -213,16 +213,17 @@ Custom property | Description | Default
       }
     </style>
 
-    <paper-icon-button id="scrollButtonLeft" icon="paper-tabs:chevron-left" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown" tabindex="-1"></paper-icon-button>
+    <paper-icon-button icon="paper-tabs:chevron-left" class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown" tabindex="-1"></paper-icon-button>
 
     <div id="tabsContainer" on-track="_scroll" on-down="_down">
-      <div id="tabsContent">
-        <div id="selectionBar" on-transitionend="_onBarTransitionEnd"></div>
+      <div id="tabsContent" class$="[[_computeTabsContentClass(scrollable, fitContainer)]]">
+        <div id="selectionBar" class$="[[_computeSelectionBarClass(noBar, alignBottom)]]"
+            on-transitionend="_onBarTransitionEnd"></div>
         <slot></slot>
       </div>
     </div>
 
-    <paper-icon-button id="scrollButtonRight" icon="paper-tabs:chevron-right" on-up="_onScrollButtonUp" on-down="_onRightScrollButtonDown" tabindex="-1"></paper-icon-button>
+    <paper-icon-button icon="paper-tabs:chevron-right" class$="[[_computeScrollButtonClass(_rightHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onRightScrollButtonDown" tabindex="-1"></paper-icon-button>
 
   </template>
 
@@ -353,12 +354,6 @@ Custom property | Description | Default
         }
       },
 
-      observers: [
-        '_setScrollButtonClass(_leftHidden, _rightHidden, scrollable, hideScrollButtons)',
-        '_setTabsContentClass(scrollable, fitContainer)',
-        '_setSelectionBarClass(noBar, alignBottom)',
-      ],
-
       hostAttributes: {
         role: 'tablist'
       },
@@ -403,61 +398,30 @@ Custom property | Description | Default
         element.removeAttribute('noink');
       },
 
-      _setScrollButtonClass: function(_leftHidden, _rightHidden, scrollable, hideScrollButtons) {
-        var scrollButtonLeftClassList = this.$.scrollButtonLeft.classList;
-        var scrollButtonRightClassList = this.$.scrollButtonRight.classList;
-
+      _computeScrollButtonClass: function(hideThisButton, scrollable, hideScrollButtons) {
         if (!scrollable || hideScrollButtons) {
-          scrollButtonLeftClassList.add('hidden');
-          scrollButtonRightClassList.add('hidden');
-        } else {
-          scrollButtonLeftClassList.remove('hidden');
-          scrollButtonRightClassList.remove('hidden');
+          return 'hidden';
         }
 
-        if (_leftHidden) {
-          scrollButtonLeftClassList.add('not-visible');
-        } else {
-          scrollButtonLeftClassList.remove('not-visible');
+        if (hideThisButton) {
+          return 'not-visible';
         }
 
-        if (_rightHidden) {
-          scrollButtonRightClassList.add('not-visible');
-        } else {
-          scrollButtonRightClassList.remove('not-visible');
-        }
+        return '';
       },
 
-      _setTabsContentClass: function(scrollable, fitContainer) {
-        var tabsContentClassList = this.$.tabsContent.classList;
-
-        tabsContentClassList.remove('scrollable');
-        tabsContentClassList.remove('fit-container');
-
-        if (scrollable) {
-          tabsContentClassList.add('scrollable');
-          if (fitContainer) {
-            tabsContentClassList.add('fit-container');
-          } else {
-            tabsContentClassList.remove('fit-container');
-          }
-        } else {
-          tabsContentClassList.remove('scrollable');
-          tabsContentClassList.remove('fit-container');
-        }
+      _computeTabsContentClass: function(scrollable, fitContainer) {
+        return scrollable ? 'scrollable' + (fitContainer ? ' fit-container' : '') : ' fit-container';
       },
 
-      _setSelectionBarClass: function(noBar, alignBottom) {
-        var selectionBarClassList = this.$.selectionBar.classList;
-
-        selectionBarClassList.remove('hidden');
-        selectionBarClassList.remove('align-bottom');
-
+      _computeSelectionBarClass: function(noBar, alignBottom) {
         if (noBar) {
-          selectionBarClassList.add('hidden');
+          return 'hidden';
         } else if (alignBottom) {
-          selectionBarClassList.add('align-bottom');
+          return 'align-bottom';
         }
+
+        return '';
       },
 
       // TODO(cdata): Add `track` response back in when gesture lands.
