@@ -35,6 +35,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </test-fixture>
 
     <script>
+      function waitForIronItemsChanged(selector, callback) {
+        selector.addEventListener('iron-items-changed', function onIronItemsChanged() {
+          selector.removeEventListener('iron-items-changed', onIronItemsChanged);
+          callback();
+        })
+      }
 
       suite('set the selected attribute', function() {
 
@@ -42,10 +48,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         setup(function(done) {
           tabs = fixture('basic');
-          tabs.addEventListener('iron-items-changed', function onIronItemsChanged() {
-            tabs.removeEventListener('iron-items-changed', onIronItemsChanged);
-            done();
-          });
+          waitForIronItemsChanged(tabs, done);
         });
 
         test('selected value', function() {
@@ -65,9 +68,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         setup(function(done) {
           tabs = fixture('basic');
-          tabs.addEventListener('iron-items-changed', function onIronItemsChanged() {
-            tabs.removeEventListener('iron-items-changed', onIronItemsChanged);
-
+          waitForIronItemsChanged(tabs, function() {
             tab = tabs.querySelector('[name=zot]');
             tab.dispatchEvent(new CustomEvent('click', {bubbles: true}));
             done();

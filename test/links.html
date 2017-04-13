@@ -68,6 +68,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </test-fixture>
 
     <script>
+      function waitForIronItemsChanged(selector, callback) {
+        selector.addEventListener('iron-items-changed', function onIronItemsChanged() {
+          selector.removeEventListener('iron-items-changed', onIronItemsChanged);
+          callback();
+        })
+      }
 
       suite('links', function() {
 
@@ -78,9 +84,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           setup(function(done) {
             tabs = fixture('links');
-            tabs.addEventListener('iron-items-changed', function onIronItemsChanged() {
-              tabs.removeEventListener('iron-items-changed', onIronItemsChanged);
-
+            waitForIronItemsChanged(tabs, function() {
               tab = tabs.querySelectorAll('paper-tab')[1];
               anchor = tab.querySelector('a');
               done();
@@ -118,9 +122,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           setup(function(done) {
             tabs = fixture('not-links');
-            tabs.addEventListener('iron-items-changed', function onIronItemsChanged() {
-              tabs.removeEventListener('iron-items-changed', onIronItemsChanged);
-
+            waitForIronItemsChanged(tabs, function() {
               tab = tabs.querySelectorAll('paper-tab')[1];
               anchor = tab.querySelector('a');
               done();
@@ -148,9 +150,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           setup(function(done) {
             tabs = fixture('links');
-            tabs.addEventListener('iron-items-changed', function onIronItemsChanged() {
-              tabs.removeEventListener('iron-items-changed', onIronItemsChanged);
-
+            waitForIronItemsChanged(tabs, function() {
               tab = tabs.querySelectorAll('paper-tab')[1];
               anchor = tab.querySelector('a');
               done();

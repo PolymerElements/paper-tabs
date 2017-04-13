@@ -57,16 +57,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.approximately(rect.right, tabRect.right, 1);
       }
 
+      function waitForIronItemsChanged(selector, callback) {
+        selector.addEventListener('iron-items-changed', function onIronItemsChanged() {
+          selector.removeEventListener('iron-items-changed', onIronItemsChanged);
+          callback();
+        })
+      }
+
       suite('defaults', function() {
 
         var tabs;
 
         setup(function(done) {
           tabs = fixture('basic');
-          tabs.addEventListener('iron-items-changed', function onIronItemsChanged() {
-            tabs.removeEventListener('iron-items-changed', onIronItemsChanged);
-            done();
-          });
+          waitForIronItemsChanged(tabs, done);
         });
 
         test('to nothing selected', function() {
@@ -113,10 +117,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         setup(function(done) {
           tabs = fixture('HiddenTabs');
-          tabs.addEventListener('iron-items-changed', function onIronItemsChanged() {
-            tabs.removeEventListener('iron-items-changed', onIronItemsChanged);
-            done();
-          });
+          waitForIronItemsChanged(tabs, done);
         });
 
         test('choose the correct bar position once made visible', function() {
@@ -132,9 +133,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         setup(function(done) {
           tabs = fixture('basic');
-          tabs.addEventListener('iron-items-changed', function onIronItemsChanged() {
-            tabs.removeEventListener('iron-items-changed', onIronItemsChanged);
-
+          waitForIronItemsChanged(tabs, function() {
             tabs.selected = index;
             done();
           });
@@ -165,9 +164,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         setup(function(done) {
           tabs = fixture('basic');
-          tabs.addEventListener('iron-items-changed', function onIronItemsChanged() {
-            tabs.removeEventListener('iron-items-changed', onIronItemsChanged);
-
+          waitForIronItemsChanged(tabs, function() {
             tab = tabs.querySelectorAll('paper-tab')[index];
             tab.dispatchEvent(new CustomEvent('click', {bubbles: true}));
             done();
@@ -209,10 +206,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         setup(function(done) {
           tabs = fixture('basic');
-          tabs.addEventListener('iron-items-changed', function onIronItemsChanged() {
-            tabs.removeEventListener('iron-items-changed', onIronItemsChanged);
-            done();
-          });
+          waitForIronItemsChanged(tabs, done);
         });
 
         test('noink attribute propagates to all descendant tabs', function() {
@@ -235,10 +229,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         setup(function(done) {
           tabs = fixture('basic');
-          tabs.addEventListener('iron-items-changed', function onIronItemsChanged() {
-            tabs.removeEventListener('iron-items-changed', onIronItemsChanged);
-            done();
-          });
+          waitForIronItemsChanged(tabs, done);
         });
 
         test('paper-tabs has role tablist', function() {
