@@ -90,6 +90,9 @@ Custom property | Description | Default
 `--paper-tabs` | Mixin applied to the tabs | `{}`
 `--paper-tabs-content` | Mixin applied to the content container of tabs | `{}`
 `--paper-tabs-container` | Mixin applied to the layout container of tabs | `{}`
+`--paper-tabs-scroll-buttons` | Mixin applied to the scroll buttons | `{}`
+`--paper-tabs-scroll-button-left` | Mixin applied to the left scroll button | `{}`
+`--paper-tabs-scroll-button-right` | Mixin applied to the right scroll button | `{}`
 
 @hero hero.svg
 @demo demo/index.html
@@ -167,6 +170,7 @@ Custom property | Description | Default
       .not-visible {
         opacity: 0;
         cursor: default;
+        display: none;
       }
 
       paper-icon-button {
@@ -211,9 +215,21 @@ Custom property | Description | Default
       #tabsContent > ::slotted(:not(#selectionBar)) {
         height: 100%;
       }
+
+      paper-icon-button {
+        @apply --paper-tabs-scroll-buttons;
+      }
+
+      #scroll-button-left {
+        @apply --paper-tabs-scroll-button-left;
+      }
+
+      #scroll-button-right {
+        @apply --paper-tabs-scroll-button-right;
+      }
     </style>
 
-    <paper-icon-button icon="paper-tabs:chevron-left" class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown" tabindex="-1"></paper-icon-button>
+    <paper-icon-button id="scroll-button-left" icon="paper-tabs:chevron-left" class$="[[_computeScrollButtonClass(_leftHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onLeftScrollButtonDown" tabindex="-1"></paper-icon-button>
 
     <div id="tabsContainer" on-track="_scroll" on-down="_down">
       <div id="tabsContent" class$="[[_computeTabsContentClass(scrollable, fitContainer)]]">
@@ -223,7 +239,7 @@ Custom property | Description | Default
       </div>
     </div>
 
-    <paper-icon-button icon="paper-tabs:chevron-right" class$="[[_computeScrollButtonClass(_rightHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onRightScrollButtonDown" tabindex="-1"></paper-icon-button>
+    <paper-icon-button id="scroll-button-right" icon="paper-tabs:chevron-right" class$="[[_computeScrollButtonClass(_rightHidden, scrollable, hideScrollButtons)]]" on-up="_onScrollButtonUp" on-down="_onRightScrollButtonDown" tabindex="-1"></paper-icon-button>
 
   </template>
 
