@@ -1,0 +1,34 @@
+{
+  "name": "@polymer/paper-tabs",
+  "flat": true,
+  "version": "3.0.0-pre.1",
+  "description": "Material design tabs",
+  "contributors": [
+    "The Polymer Authors"
+  ],
+  "keywords": [
+    "web-components",
+    "polymer",
+    "tabs",
+    "control"
+  ],
+  "main": "paper-tabs.html",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/PolymerElements/paper-tabs.git"
+  },
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "dependencies": {
+    "@polymer/iron-behaviors": "^3.0.0-pre.1",
+    "@polymer/iron-flex-layout": "^3.0.0-pre.1",
+    "@polymer/iron-icon": "^3.0.0-pre.1",
+    "@polymer/iron-iconset-svg": "^3.0.0-pre.1",
+    "@polymer/iron-menu-behavior": "^3.0.0-pre.1",
+    "@polymer/iron-resizable-behavior": "^3.0.0-pre.1",
+    "@polymer/paper-behaviors": "^3.0.0-pre.1",
+    "@polymer/paper-icon-button": "^3.0.0-pre.1",
+    "@polymer/paper-styles": "^3.0.0-pre.1",
+    "@polymer/polymer": "^3.0.0-pre.1"
+  },
+  "devDependencies": {}
+}
