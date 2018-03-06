@@ -44,6 +44,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </template>
     </test-fixture>
 
+    <test-fixture id="scrollable">
+      <template>
+        <paper-tabs scrollable>
+          <paper-tab>NUMBER ONE ITEM</paper-tab>
+          <paper-tab>ITEM TWO</paper-tab>
+          <paper-tab>THE THIRD ITEM</paper-tab>
+          <paper-tab>THE ITEM FOUR</paper-tab>
+          <paper-tab>FIFTH</paper-tab>
+          <paper-tab>THE SIXTH TAB</paper-tab>
+          <paper-tab>NUMBER SEVEN</paper-tab>
+          <paper-tab>EIGHT</paper-tab>
+          <paper-tab>NUMBER NINE</paper-tab>
+          <paper-tab>THE TENTH</paper-tab>
+          <paper-tab>THE ITEM ELEVEN</paper-tab>
+          <paper-tab>TWELFTH ITEM</paper-tab>
+        </paper-tabs>
+      </template>
+    </test-fixture>
+
     <script>
 
       function ensureDocumentHasFocus() {
@@ -402,9 +421,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               });
             });
           });
+        });
+
+      suite('scrollable', function() {
+        function generateScrollableTestSuite(dir) {
+          return function() {
+            var tabs;
+            var tabScrollContainer;
+
+            setup(function () {
+              tabs = fixture('scrollable');
+              tabs.setAttribute('dir', dir);
+              tabs.style.width = '500px';
+              tabScrollContainer = tabs.$.tabsContainer;
+            });
+
+            test("The test tab container width is smaller than the scroll area.", function() {
+              var tabScrollContainerRect = tabScrollContainer.getBoundingClientRect();
+              assert.isTrue(tabScrollContainer.scrollWidth > tabScrollContainerRect.width);
+            });
+
+            function assertItemVisibleWithinTolerance(item, tolerancePx) {
+              var scrollContainerRect = tabScrollContainer.getBoundingClientRect();
+              var itemRect = item.getBoundingClientRect();
+              assert.isTrue((scrollContainerRect.left - itemRect.left) < tolerancePx);
+              assert.isTrue((itemRect.right - scrollContainerRect.right) < tolerancePx);
+            }
+
+            test("When an item is selected, that item is visible.", function() {
+              for (var i = 0; i < tabs.items.length; i++) {
+                tabs.selected = i;
+                assertItemVisibleWithinTolerance(tabs.items[i], 1);
+              }
+              for (var i = tabs.items.length - 1; i >= 0; i--) {
+                tabs.selected = i;
+                assertItemVisibleWithinTolerance(tabs.items[i], 1);
+              }
+            });
+          };
+        }
+
+        suite('LTR', generateScrollableTestSuite('ltr'));
+        suite('RTL', generateScrollableTestSuite('rtl'));
       });
 
     </script>
-
   </body>
 </html>

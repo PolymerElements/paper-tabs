@@ -375,10 +375,7 @@ Custom property | Description | Default
         this._pendingActivationTimeout = undefined;
         this._bindDelayedActivationHandler = this._delayedActivationHandler.bind(this);
         this.addEventListener('blur', this._onBlurCapture.bind(this), true);
-      },
-
-      ready: function() {
-        this.setScrollDirection('y', this.$.tabsContainer);
+        this.__cachedRTL = undefined;
       },
 
       detached: function() {
@@ -428,7 +425,6 @@ Custom property | Description | Default
 
       _onTabSizingChanged: function() {
         this.debounce('_onTabSizingChanged', function() {
-          this._scroll();
           this._tabChanged(this.selectedItem);
         }, 10);
       },
@@ -511,6 +507,13 @@ Custom property | Description | Default
         );
       },
 
+      __getRTL: function() {
+        if (this.__cachedRTL === undefined) {
+          this.__cachedRTL = this._isRTL;
+        }
+        return this.__cachedRTL;
+      },
+
       _scroll: function(e, detail) {
         if (!this.scrollable) {
           return;
@@ -531,13 +534,31 @@ Custom property | Description | Default
         }, 1);
       },
 
+      /**
+       * Adjusts `scrollLeft` by a relative amount, with positive values
+       * scrolling into view content hidden to the right (LTR-like),
+       * regardless of the element's current directionality.
+       */
       _affectScroll: function(dx) {
-        this.$.tabsContainer.scrollLeft += dx;
+        this.$.tabsContainer.scrollLeft += (this.__getRTL() && this.__getRTLPositiveLeft() ? -1 : 1) * dx;
+        this.__updateScrollButtonsHiddenState();
+      },
 
-        var scrollLeft = this.$.tabsContainer.scrollLeft;
+      /**
+       * Scrolls to a normalized (LTR-like) `scrollLeft` position, regardless
+       * of the element's current directionality.
+       */
+      __scrollToNormalizedLeft: function(normalizedLeft) {
+        this.$.tabsContainer.scrollLeft = this.__normalizedLeftToScrollLeft(normalizedLeft);
+        this.__updateScrollButtonsHiddenState();
+      },
 
-        this._leftHidden = scrollLeft === 0;
-        this._rightHidden = scrollLeft === this._tabContainerScrollSize;
+      __updateScrollButtonsHiddenState: function() {
+        var normalizedLeft =
+          this.__scrollLeftToNormalizedLeft(this.$.tabsContainer.scrollLeft);
+
+        this._leftHidden = normalizedLeft <= 0;
+        this._rightHidden = normalizedLeft >= this._tabContainerScrollSize;
       },
 
       _onLeftScrollButtonDown: function() {
@@ -569,17 +590,19 @@ Custom property | Description | Default
           this.$.selectionBar.classList.remove('expand');
           this.$.selectionBar.classList.remove('contract');
           this._positionBar(0, 0);
+          this.__updateScrollButtonsHiddenState();
           return;
         }
 
-        var r = this.$.tabsContent.getBoundingClientRect();
-        var w = r.width;
+        var scrollContentRect = this.$.tabsContent.getBoundingClientRect();
+        var scrollContentWidth = scrollContentRect.width;
         var tabRect = tab.getBoundingClientRect();
-        var tabOffsetLeft = tabRect.left - r.left;
+        var tabOffsetLeft = tabRect.left - scrollContentRect.left;
 
+        // The final position of the bar, below the newly selected tab.
         this._pos = {
-          width: this._calcPercent(tabRect.width, w),
-          left: this._calcPercent(tabOffsetLeft, w)
+          width: this._calcPercent(tabRect.width, scrollContentWidth),
+          left: this._calcPercent(tabOffsetLeft, scrollContentWidth)
         };
 
         if (this.noSlide || old == null) {
@@ -587,45 +610,42 @@ Custom property | Description | Default
           this.$.selectionBar.classList.remove('expand');
           this.$.selectionBar.classList.remove('contract');
           this._positionBar(this._pos.width, this._pos.left);
-          return;
-        }
-
-        var oldRect = old.getBoundingClientRect();
-        var oldIndex = this.items.indexOf(old);
-        var index = this.items.indexOf(tab);
-        var m = 5;
-
-        // bar animation: expand
-        this.$.selectionBar.classList.add('expand');
-
-        var moveRight = oldIndex < index;
-        var isRTL = this._isRTL;
-        if (isRTL) {
-          moveRight = !moveRight;
-        }
-
-        if (moveRight) {
-          this._positionBar(this._calcPercent(tabRect.left + tabRect.width - oldRect.left, w) - m,
-              this._left);
         } else {
-          this._positionBar(this._calcPercent(oldRect.left + oldRect.width - tabRect.left, w) - m,
-              this._calcPercent(tabOffsetLeft, w) + m);
+          var oldRect = old.getBoundingClientRect();
+
+          var minLeft = Math.min(tabRect.left, oldRect.left);
+          var maxRight = Math.max(tabRect.right, oldRect.right);
+          var totalWidth = maxRight - minLeft;
+
+          // The padding around both sides of the selection bar in the
+          // mid-transition expanded state, in units of `totalWidth`.
+          var padding = 0.05;
+          var targetWidth = (1 - 2 * padding) * totalWidth;
+          var targetLeft = (minLeft - scrollContentRect.left) + padding * totalWidth;
+
+          this.$.selectionBar.classList.add('expand');
+          var targetWidthPercent = this._calcPercent(targetWidth, scrollContentWidth);
+          var targetLeftPercent = this._calcPercent(targetLeft, scrollContentWidth);
+          this._positionBar(targetWidthPercent, targetLeftPercent);
         }
 
         if (this.scrollable) {
           this._scrollToSelectedIfNeeded(tabRect.width, tabOffsetLeft);
         }
+
+        this.__updateScrollButtonsHiddenState();
       },
 
       _scrollToSelectedIfNeeded: function(tabWidth, tabOffsetLeft) {
-        var l = tabOffsetLeft - this.$.tabsContainer.scrollLeft;
-        if (l < 0) {
-          this.$.tabsContainer.scrollLeft += l;
-        } else {
-          l += (tabWidth - this.$.tabsContainer.offsetWidth);
-          if (l > 0) {
-            this.$.tabsContainer.scrollLeft += l;
-          }
+        var containerRect = this.$.tabsContainer.getBoundingClientRect();
+        var tabRect = this.selectedItem.getBoundingClientRect();
+        var normalizedLeft =
+          this.__scrollLeftToNormalizedLeft(this.$.tabsContainer.scrollLeft);
+
+        if (tabOffsetLeft < normalizedLeft) {
+          this.__scrollToNormalizedLeft(tabOffsetLeft);
+        } else if (normalizedLeft + containerRect.width < tabOffsetLeft + tabWidth) {
+          this.__scrollToNormalizedLeft(tabOffsetLeft + tabWidth - containerRect.width);
         }
       },
 
@@ -655,7 +675,134 @@ Custom property | Description | Default
         } else if (cl.contains('contract')) {
           cl.remove('contract');
         }
-      }
+      },
+
+      /**
+       * Normalizes a value returned by `scrollLeft`, which can be writing
+       * direction dependent, to its LTR equivalent.
+       */
+      __scrollLeftToNormalizedLeft: function(scrollLeft) {
+        if (this.__getRTL()) {
+          var normalizedLeft = scrollLeft;
+          normalizedLeft *= this.__getRTLPositiveLeft() ? -1 : 1;
+          normalizedLeft += this.__getRTLZeroRight() ? this._tabContainerScrollSize : 0;
+          return normalizedLeft;
+        } else {
+          return scrollLeft;
+        }
+      },
+
+      /**
+       * Converts normalized (LTR-like) `scrollLeft` values to the browser
+       * specific value based on the element's current directionality.
+       */
+      __normalizedLeftToScrollLeft: function(normalizedLeft) {
+        if (this.__getRTL()) {
+          var scrollLeft = normalizedLeft;
+          scrollLeft -= this.__getRTLZeroRight() ? this._tabContainerScrollSize : 0;
+          scrollLeft *= this.__getRTLPositiveLeft() ? -1 : 1;
+          return scrollLeft;
+        } else {
+          return normalizedLeft;
+        }
+      },
+
+      /**
+       * Computes (if needed) and returns `zeroRight`. See below for a
+       * description of this value.
+       */
+      __getRTLZeroRight: function() {
+        var __rtlBehavior = this.__rtlBehavior;
+        if (__rtlBehavior.zeroRight === undefined) {
+          this.__checkRTLBehavior();
+        }
+        return __rtlBehavior.zeroRight;
+      },
+
+      /**
+       * Computes (if needed) and returns `positiveLeft`. See below for a
+       * description of this value.
+       */
+      __getRTLPositiveLeft: function() {
+        var __rtlBehavior = this.__rtlBehavior;
+        if (__rtlBehavior.positiveLeft === undefined) {
+          this.__checkRTLBehavior();
+        }
+        return __rtlBehavior.positiveLeft;
+      },
+
+      // These properties are nested in this object so that the object reference
+      // is copied to each instance in IE10, where the prototype of an object
+      // can't be changed after it is created.
+      __rtlBehavior: {
+        // True if, when an element has RTL directionality, `scrollLeft` is
+        // zero when the right edge of the scrollable area is aligned with the
+        // right edge of its overflowing content. (As opposed to LTR, where
+        // `scrollLeft` is zero when when the left edge of the scrollable area
+        // is aligned with the left edge of its overflowing content.)
+        // This variable is determined and set in `__checkRTLBehavior` the
+        // first time `zeroRight` or `positiveLeft` is read.
+        zeroRight: undefined,
+
+        // True if, when an element has RTL directionality, positive changes
+        // to `scrollLeft` cause the scrollable area to show content that is
+        // further to the left. (As opposed to LTR, where positive changes to
+        // `scrollLeft` cause the scrollable area to show overflowing content
+        // that is further to the right.)
+        // This variable is determined and set in `__checkRTLBehavior` the
+        // first time `zeroRight` or `positiveLeft` is read.
+        positiveLeft: undefined,
+      },
+
+      /**
+       * Computes the browser's `scrollLeft` behavior for elements with RTL
+       * directionality.
+       */
+      __checkRTLBehavior: function() {
+        var __rtlBehavior = this.__rtlBehavior;
+
+        var outer = document.createElement('div');
+        outer.setAttribute('dir', 'rtl');
+        outer.style.position = 'absolute';
+        outer.style.width = '50px';
+        outer.style.height = '50px';
+        outer.style.overflow = 'hidden';
+
+        var inner = document.createElement('div');
+        inner.style.width = '100px';
+        inner.style.height = '100px';
+        outer.appendChild(inner);
+
+        document.body.appendChild(outer);
+
+        // Is this container's non-zero-edge alignment represented by a
+        // positive or negative value? (Are we able to scroll to a negative
+        // value when the only overflowing content is positioned positively?)
+        outer.scrollLeft = -10000;
+        var fullScrollNegative = outer.scrollLeft < 0;
+
+        // Are the right edges of the container and its overflowing content
+        // aligned when `scrollLeft` is zero? (The overflowing content is
+        // larger than the container, so only one set of edges can be
+        // aligned.)
+        outer.scrollLeft = 0;
+        var innerStartRect = inner.getBoundingClientRect();
+        var outerStartRect = outer.getBoundingClientRect();
+        __rtlBehavior.zeroRight = innerStartRect.right === outerStartRect.right;
+
+        // Scroll to the end of the scrollable area in the available non-zero
+        // direction.
+        outer.scrollLeft += (fullScrollNegative ? -1 : 1) * 10000;
+        var innerEndRect = inner.getBoundingClientRect();
+
+        // If the change made to `scrollLeft` and the amount by which its
+        // overflowing content's bounding box moved have matching signs, then
+        // left is the positive direction.
+        var contentMovementNegative = innerEndRect.left < innerStartRect.left;
+        __rtlBehavior.positiveLeft = fullScrollNegative === contentMovementNegative;
+
+        document.body.removeChild(outer);
+      },
     });
   </script>
 </dom-module>
