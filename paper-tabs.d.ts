@@ -94,7 +94,6 @@
 interface PaperTabsElement extends Polymer.Element, Polymer.IronResizableBehavior, Polymer.IronMenubarBehavior {
   selectable: string|null|undefined;
   keyBindings: object;
-  hostAttributes: object|null;
 
   /**
    * If true, ink ripple effect is disabled. When this property is changed,

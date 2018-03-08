@@ -47,7 +47,6 @@ interface PaperTabElement extends Polymer.Element, Polymer.IronControlState, Pol
    * the first anchor element found in its descendants
    */
   link: boolean|null|undefined;
-  hostAttributes: object|null;
   readonly _parentNoink: any;
   attached(): void;
   _updateNoink(): void;
