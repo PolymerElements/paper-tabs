@@ -1,0 +1,10 @@
+{
+  "name": "@polymer/paper-tabs",
+  "private": true,
+  "description": "Material design tabs",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/PolymerElements/paper-tabs.git"
+  },
+  "license": "BSD-3-Clause"
+}
