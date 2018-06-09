@@ -538,6 +538,9 @@ Custom property | Description | Default
           this.$.selectionBar.classList.remove('expand');
           this.$.selectionBar.classList.remove('contract');
           this._positionBar(this._pos.width, this._pos.left);
+          if (this.scrollable) {
+            this._scrollToSelectedIfNeeded(tabRect.width, tabOffsetLeft);
+          }
           return;
         }
 
