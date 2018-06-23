@@ -17,20 +17,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
 
-    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-    <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
-    <link rel="import" href="../../iron-pages/iron-pages.html">
-    <link rel="import" href="../../paper-styles/typography.html">
-    <link rel="import" href="../paper-tab.html">
-    <link rel="import" href="../paper-tabs.html">
+    <script type="module" src="../../iron-demo-helpers/demo-pages-shared-styles.js"></script>
+    <script type="module" src="../../iron-demo-helpers/demo-snippet.js"></script>
+    <script type="module" src="../../iron-flex-layout/iron-flex-layout.js"></script>
+    <script type="module" src="../../iron-pages/iron-pages.js"></script>
+    <script type="module" src="../../paper-styles/typography.js"></script>
+    <script type="module" src="../paper-tab.js"></script>
+    <script type="module" src="../paper-tabs.js"></script>
 
   </head>
   <body unresolved>
 
-    <custom-style>
+    <!-- FIXME(polymer-modulizer):
+        These imperative modules that innerHTML your HTML are
+        a hacky way to be sure that any mixins in included style
+        modules are ready before any elements that reference them are
+        instantiated, otherwise the CSS @apply mixin polyfill won't be
+        able to expand the underlying CSS custom properties.
+        See: https://github.com/Polymer/polymer-modulizer/issues/154
+        -->
+    <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<custom-style>
       <style is="custom-style" include="demo-pages-shared-styles">
         #container {
           max-width: 600px;
@@ -41,9 +52,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           color: #fff;
         }
       </style>
-    </custom-style>
+    </custom-style>`;
 
-    <div id="container" class="vertical-section-container centered">
+document.body.appendChild($_documentContainer.content);
+</script>
+
+    <script type="module">
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<div id="container" class="vertical-section-container centered">
 
       <h3>Plain <code>paper-tabs</code>.</h3>
       <demo-snippet>
@@ -67,7 +84,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </style>
           </custom-style>
 
-          <paper-tabs id="plain-tabs" selected="0" no-bar>
+          <paper-tabs id="plain-tabs" selected="0" no-bar="">
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
@@ -81,7 +98,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </h3>
       <demo-snippet>
         <template>
-          <paper-tabs selected="0" no-slide>
+          <paper-tabs selected="0" no-slide="">
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
@@ -95,7 +112,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </h3>
       <demo-snippet>
         <template>
-          <paper-tabs selected="0" noink>
+          <paper-tabs selected="0" noink="">
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
@@ -110,7 +127,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </h3>
       <demo-snippet>
         <template>
-          <paper-tabs selected="0" scrollable>
+          <paper-tabs selected="0" scrollable="">
             <paper-tab>NUMBER ONE ITEM</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>THE THIRD ITEM</paper-tab>
@@ -133,13 +150,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </h3>
       <demo-snippet>
         <template>
-          <paper-tabs selected="0" scrollable fit-container>
+          <paper-tabs selected="0" scrollable="" fit-container="">
             <paper-tab>NUMBER ONE ITEM</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>THE THIRD ITEM</paper-tab>
           </paper-tabs>
           <br>
-          <paper-tabs selected="0" scrollable fit-container style="width: 50%;">
+          <paper-tabs selected="0" scrollable="" fit-container="" style="width: 50%;">
             <paper-tab>NUMBER ONE ITEM</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>THE THIRD ITEM</paper-tab>
@@ -159,7 +176,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <paper-tab>ITEM THREE</paper-tab>
             </paper-tabs>
             &nbsp;
-            <paper-tabs selected="0" scrollable>
+            <paper-tabs selected="0" scrollable="">
               <paper-tab>NUMBER ONE ITEM</paper-tab>
               <paper-tab>ITEM TWO</paper-tab>
               <paper-tab>THE THIRD ITEM</paper-tab>
@@ -184,7 +201,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </h3>
       <demo-snippet>
         <template>
-          <paper-tabs selected="0" align-bottom>
+          <paper-tabs selected="0" align-bottom="">
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
@@ -213,13 +230,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </custom-style>
 
           <paper-tabs selected="0">
-            <paper-tab link>
+            <paper-tab link="">
               <a href="#item1" tabindex="-1">ITEM ONE</a>
             </paper-tab>
-            <paper-tab link>
+            <paper-tab link="">
               <a href="#item2" tabindex="-1">ITEM TWO</a>
             </paper-tab>
-            <paper-tab link>
+            <paper-tab link="">
               <a href="#item3" tabindex="-1">ITEM THREE</a>
             </paper-tab>
           </paper-tabs>
@@ -231,7 +248,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </h3>
       <demo-snippet>
         <template>
-          <paper-tabs selected="0" autoselect>
+          <paper-tabs selected="0" autoselect="">
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
@@ -249,7 +266,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <h4>
             <code>autoselect-delay="0"</code>
           </h4>
-          <paper-tabs selected="0" no-slide autoselect autoselect-delay="0">
+          <paper-tabs selected="0" no-slide="" autoselect="" autoselect-delay="0">
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
@@ -258,7 +275,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <h4>
             <code>autoselect-delay="1000"</code>
           </h4>
-          <paper-tabs selected="0" autoselect autoselect-delay="1000">
+          <paper-tabs selected="0" autoselect="" autoselect-delay="1000">
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
@@ -312,7 +329,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </demo-snippet>
       -->
 
-    </div>
+    </div>`;
+
+document.body.appendChild($_documentContainer.content);
+</script>
 
   </body>
 </html>

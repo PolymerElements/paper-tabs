@@ -16,10 +16,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script src="../../../wct-browser-legacy/browser.js"></script>
 
-    <link rel="import" href="../paper-tabs.html">
+    <script type="module" src="../paper-tabs.js"></script>
     
   </head>
   <body>
@@ -34,55 +34,57 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </template>
     </test-fixture>
 
-    <script>
-      function waitForIronItemsChanged(selector, callback) {
-        selector.addEventListener(
-            'iron-items-changed', function onIronItemsChanged() {
-              selector.removeEventListener('iron-items-changed', onIronItemsChanged);
-              callback();
-            })
-      }
+    <script type="module">
+import '../paper-tabs.js';
+import { flush } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+function waitForIronItemsChanged(selector, callback) {
+  selector.addEventListener(
+      'iron-items-changed', function onIronItemsChanged() {
+        selector.removeEventListener('iron-items-changed', onIronItemsChanged);
+        callback();
+      })
+}
 
-      suite('set the selected attribute', function() {
-        var tabs;
+suite('set the selected attribute', function() {
+  var tabs;
 
-        setup(function(done) {
-          tabs = fixture('basic');
-          waitForIronItemsChanged(tabs, done);
-        });
+  setup(function(done) {
+    tabs = fixture('basic');
+    waitForIronItemsChanged(tabs, done);
+  });
 
-        test('selected value', function() {
-          assert.equal(tabs.selected, 'bar');
-        });
+  test('selected value', function() {
+    assert.equal(tabs.selected, 'bar');
+  });
 
-        test('selected tab has iron-selected class', function() {
-          Polymer.dom.flush();
-          assert.isTrue(
-              tabs.querySelector('[name=bar]').classList.contains('iron-selected'));
-        });
-      });
+  test('selected tab has iron-selected class', function() {
+    flush();
+    assert.isTrue(
+        tabs.querySelector('[name=bar]').classList.contains('iron-selected'));
+  });
+});
 
-      suite('select tab via click', function() {
-        var tabs, tab;
+suite('select tab via click', function() {
+  var tabs, tab;
 
-        setup(function(done) {
-          tabs = fixture('basic');
-          waitForIronItemsChanged(tabs, function() {
-            tab = tabs.querySelector('[name=zot]');
-            tab.dispatchEvent(new CustomEvent('click', {bubbles: true}));
-            done();
-          });
-        });
+  setup(function(done) {
+    tabs = fixture('basic');
+    waitForIronItemsChanged(tabs, function() {
+      tab = tabs.querySelector('[name=zot]');
+      tab.dispatchEvent(new CustomEvent('click', {bubbles: true}));
+      done();
+    });
+  });
 
-        test('selected value', function() {
-          assert.equal(tabs.selected, 'zot');
-        });
+  test('selected value', function() {
+    assert.equal(tabs.selected, 'zot');
+  });
 
-        test('selected tab has iron-selected class', function() {
-          assert.isTrue(tab.classList.contains('iron-selected'));
-        });
-      });
-    </script>
+  test('selected tab has iron-selected class', function() {
+    assert.isTrue(tab.classList.contains('iron-selected'));
+  });
+});
+</script>
 
   </body>
 </html>

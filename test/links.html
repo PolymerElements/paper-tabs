@@ -16,11 +16,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script src="../../../wct-browser-legacy/browser.js"></script>
 
-    <link rel="import" href="../paper-tabs.html">
-    <link rel="import" href="../../iron-test-helpers/iron-test-helpers.html">
+    <script type="module" src="../paper-tabs.js"></script>
+    <script type="module" src="../../iron-test-helpers/iron-test-helpers.js"></script>
 
   </head>
   <body>
@@ -67,104 +67,106 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </template>
     </test-fixture>
 
-    <script>
-      function waitForIronItemsChanged(selector, callback) {
-        selector.addEventListener(
-            'iron-items-changed', function onIronItemsChanged() {
-              selector.removeEventListener('iron-items-changed', onIronItemsChanged);
-              callback();
-            })
-      }
+    <script type="module">
+import '../paper-tabs.js';
+import '@polymer/iron-test-helpers/iron-test-helpers.js';
+function waitForIronItemsChanged(selector, callback) {
+  selector.addEventListener(
+      'iron-items-changed', function onIronItemsChanged() {
+        selector.removeEventListener('iron-items-changed', onIronItemsChanged);
+        callback();
+      })
+}
 
-      suite('links', function() {
-        suite('has link attribute', function() {
-          var tabs;
-          var tab, anchor;
+suite('links', function() {
+  suite('has link attribute', function() {
+    var tabs;
+    var tab, anchor;
 
-          setup(function(done) {
-            tabs = fixture('links');
-            waitForIronItemsChanged(tabs, function() {
-              tab = tabs.querySelectorAll('paper-tab')[1];
-              anchor = tab.querySelector('a');
-              done();
-            });
-          });
-
-          test('pressing enter on tab causes anchor click', function(done) {
-            tab.addEventListener('click', function onTabClick(event) {
-              tab.removeEventListener('click', onTabClick);
-
-              expect(event.target).to.be.equal(anchor);
-              done();
-            });
-
-            MockInteractions.pressEnter(tab);
-          });
-
-          test('pressing space on tab causes anchor click', function(done) {
-            tab.addEventListener('click', function onTabClick(event) {
-              tab.removeEventListener('click', onTabClick);
-
-              expect(event.target).to.be.equal(anchor);
-              done();
-            });
-
-            MockInteractions.pressSpace(tab);
-          });
-        });
-
-        suite('does not have link attribute', function() {
-          var tabs;
-          var tab, anchor;
-
-          setup(function(done) {
-            tabs = fixture('not-links');
-            waitForIronItemsChanged(tabs, function() {
-              tab = tabs.querySelectorAll('paper-tab')[1];
-              anchor = tab.querySelector('a');
-              done();
-            });
-          });
-
-          test('pressing enter on tab does not cause anchor click', function(done) {
-            tab.addEventListener('click', function onTabClick(event) {
-              tab.removeEventListener('click', onTabClick);
-
-              expect(event.target).to.not.equal(anchor);
-              expect(event.target).to.be.equal(tab);
-              done();
-            });
-
-            MockInteractions.pressEnter(tab);
-          });
-        });
-
-        suite('not first child', function() {
-          var tabs;
-          var tab, anchor;
-
-          setup(function(done) {
-            tabs = fixture('links');
-            waitForIronItemsChanged(tabs, function() {
-              tab = tabs.querySelectorAll('paper-tab')[1];
-              anchor = tab.querySelector('a');
-              done();
-            });
-          });
-
-          test('pressing enter on tab causes anchor click', function(done) {
-            tab.addEventListener('click', function onTabClick(event) {
-              tab.removeEventListener('click', onTabClick);
-
-              expect(event.target).to.be.equal(anchor);
-              done();
-            });
-
-            MockInteractions.pressEnter(tab);
-          });
-        });
+    setup(function(done) {
+      tabs = fixture('links');
+      waitForIronItemsChanged(tabs, function() {
+        tab = tabs.querySelectorAll('paper-tab')[1];
+        anchor = tab.querySelector('a');
+        done();
       });
-    </script>
+    });
+
+    test('pressing enter on tab causes anchor click', function(done) {
+      tab.addEventListener('click', function onTabClick(event) {
+        tab.removeEventListener('click', onTabClick);
+
+        expect(event.target).to.be.equal(anchor);
+        done();
+      });
+
+      MockInteractions.pressEnter(tab);
+    });
+
+    test('pressing space on tab causes anchor click', function(done) {
+      tab.addEventListener('click', function onTabClick(event) {
+        tab.removeEventListener('click', onTabClick);
+
+        expect(event.target).to.be.equal(anchor);
+        done();
+      });
+
+      MockInteractions.pressSpace(tab);
+    });
+  });
+
+  suite('does not have link attribute', function() {
+    var tabs;
+    var tab, anchor;
+
+    setup(function(done) {
+      tabs = fixture('not-links');
+      waitForIronItemsChanged(tabs, function() {
+        tab = tabs.querySelectorAll('paper-tab')[1];
+        anchor = tab.querySelector('a');
+        done();
+      });
+    });
+
+    test('pressing enter on tab does not cause anchor click', function(done) {
+      tab.addEventListener('click', function onTabClick(event) {
+        tab.removeEventListener('click', onTabClick);
+
+        expect(event.target).to.not.equal(anchor);
+        expect(event.target).to.be.equal(tab);
+        done();
+      });
+
+      MockInteractions.pressEnter(tab);
+    });
+  });
+
+  suite('not first child', function() {
+    var tabs;
+    var tab, anchor;
+
+    setup(function(done) {
+      tabs = fixture('links');
+      waitForIronItemsChanged(tabs, function() {
+        tab = tabs.querySelectorAll('paper-tab')[1];
+        anchor = tab.querySelector('a');
+        done();
+      });
+    });
+
+    test('pressing enter on tab causes anchor click', function(done) {
+      tab.addEventListener('click', function onTabClick(event) {
+        tab.removeEventListener('click', onTabClick);
+
+        expect(event.target).to.be.equal(anchor);
+        done();
+      });
+
+      MockInteractions.pressEnter(tab);
+    });
+  });
+});
+</script>
 
   </body>
 </html>

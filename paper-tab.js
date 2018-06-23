@@ -1,4 +1,4 @@
-<!--
+/**
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -6,15 +6,8 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-
-<link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-behaviors/iron-button-state.html">
-<link rel="import" href="../iron-behaviors/iron-control-state.html">
-<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
-<link rel="import" href="../paper-behaviors/paper-ripple-behavior.html">
-
-<!--
+*/
+/*
 `paper-tab` is styled to look like a tab.  It should be used in conjunction with
 `paper-tabs`.
 
@@ -40,10 +33,23 @@ Custom property | Description | Default
 This element applies the mixin `--paper-font-common-base` but does not import `paper-styles/typography.html`.
 In order to apply the `Roboto` font to this element, make sure you've imported `paper-styles/typography.html`.
 
--->
+*/
+/*
+  FIXME(polymer-modulizer): the above comments were extracted
+  from HTML and may be out of place here. Review them and
+  then delete this comment!
+*/
+import '@polymer/polymer/polymer-legacy.js';
 
-<dom-module id="paper-tab">
-  <template>
+import { IronButtonState } from '@polymer/iron-behaviors/iron-button-state.js';
+import { IronControlState } from '@polymer/iron-behaviors/iron-control-state.js';
+import '@polymer/iron-flex-layout/iron-flex-layout.js';
+import { PaperRippleBehavior } from '@polymer/paper-behaviors/paper-ripple-behavior.js';
+import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+Polymer({
+  _template: html`
     <style>
       :host {
         @apply --layout-inline;
@@ -105,64 +111,59 @@ In order to apply the `Roboto` font to this element, make sure you've imported `
     <div class="tab-content">
       <slot></slot>
     </div>
-  </template>
+`,
 
-  <script>
-    Polymer({
-      is: 'paper-tab',
+  is: 'paper-tab',
 
-      behaviors: [
-        Polymer.IronControlState,
-        Polymer.IronButtonState,
-        Polymer.PaperRippleBehavior
-      ],
+  behaviors: [
+    IronControlState,
+    IronButtonState,
+    PaperRippleBehavior
+  ],
 
-      properties: {
+  properties: {
 
-        /**
-         * If true, the tab will forward keyboard clicks (enter/space) to
-         * the first anchor element found in its descendants
-         */
-        link: {type: Boolean, value: false, reflectToAttribute: true}
+    /**
+     * If true, the tab will forward keyboard clicks (enter/space) to
+     * the first anchor element found in its descendants
+     */
+    link: {type: Boolean, value: false, reflectToAttribute: true}
 
-      },
+  },
 
-      /** @private */
-      hostAttributes: {role: 'tab'},
+  /** @private */
+  hostAttributes: {role: 'tab'},
 
-      listeners: {down: '_updateNoink', tap: '_onTap'},
+  listeners: {down: '_updateNoink', tap: '_onTap'},
 
-      attached: function() {
-        this._updateNoink();
-      },
+  attached: function() {
+    this._updateNoink();
+  },
 
-      get _parentNoink() {
-        var parent = Polymer.dom(this).parentNode;
-        return !!parent && !!parent.noink;
-      },
+  get _parentNoink() {
+    var parent = dom(this).parentNode;
+    return !!parent && !!parent.noink;
+  },
 
-      _updateNoink: function() {
-        this.noink = !!this.noink || !!this._parentNoink;
-      },
+  _updateNoink: function() {
+    this.noink = !!this.noink || !!this._parentNoink;
+  },
 
-      _onTap: function(event) {
-        if (this.link) {
-          var anchor = this.queryEffectiveChildren('a');
+  _onTap: function(event) {
+    if (this.link) {
+      var anchor = this.queryEffectiveChildren('a');
 
-          if (!anchor) {
-            return;
-          }
-
-          // Don't get stuck in a loop delegating
-          // the listener from the child anchor
-          if (event.target === anchor) {
-            return;
-          }
-
-          anchor.click();
-        }
+      if (!anchor) {
+        return;
       }
 
-    });
-  </script>
-</dom-module>
+      // Don't get stuck in a loop delegating
+      // the listener from the child anchor
+      if (event.target === anchor) {
+        return;
+      }
+
+      anchor.click();
+    }
+  }
+});
