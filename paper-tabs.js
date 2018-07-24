@@ -8,19 +8,19 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 import '@polymer/polymer/polymer-legacy.js';
-
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/iron-icon/iron-icon.js';
-import { IronMenubarBehavior } from '@polymer/iron-menu-behavior/iron-menubar-behavior.js';
-import { IronResizableBehavior } from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
 import '@polymer/paper-styles/color.js';
 import './paper-tabs-icons.js';
 import './paper-tab.js';
-import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
-import { IronMenuBehaviorImpl } from '@polymer/iron-menu-behavior/iron-menu-behavior.js';
+
+import {IronMenuBehaviorImpl} from '@polymer/iron-menu-behavior/iron-menu-behavior.js';
+import {IronMenubarBehavior} from '@polymer/iron-menu-behavior/iron-menubar-behavior.js';
+import {IronResizableBehavior} from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
+import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import {html} from '@polymer/polymer/lib/utils/html-tag.js';
 
 /**
 Material design: [Tabs](https://www.google.com/design/spec/components/tabs.html)

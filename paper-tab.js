@@ -8,14 +8,14 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 import '@polymer/polymer/polymer-legacy.js';
-
-import { IronButtonState } from '@polymer/iron-behaviors/iron-button-state.js';
-import { IronControlState } from '@polymer/iron-behaviors/iron-control-state.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
-import { PaperRippleBehavior } from '@polymer/paper-behaviors/paper-ripple-behavior.js';
-import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+
+import {IronButtonState} from '@polymer/iron-behaviors/iron-button-state.js';
+import {IronControlState} from '@polymer/iron-behaviors/iron-control-state.js';
+import {PaperRippleBehavior} from '@polymer/paper-behaviors/paper-ripple-behavior.js';
+import {Polymer} from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import {dom} from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import {html} from '@polymer/polymer/lib/utils/html-tag.js';
 
 /*
 `paper-tab` is styled to look like a tab. It should be used in conjunction with
@@ -111,11 +111,7 @@ Polymer({
 
   is: 'paper-tab',
 
-  behaviors: [
-    IronControlState,
-    IronButtonState,
-    PaperRippleBehavior
-  ],
+  behaviors: [IronControlState, IronButtonState, PaperRippleBehavior],
 
   properties: {
 
