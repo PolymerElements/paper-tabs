@@ -7,11 +7,26 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
+import '@polymer/polymer/polymer-legacy.js';
+
+import '@polymer/iron-flex-layout/iron-flex-layout.js';
+import '@polymer/iron-icon/iron-icon.js';
+import { IronMenubarBehavior } from '@polymer/iron-menu-behavior/iron-menubar-behavior.js';
+import { IronResizableBehavior } from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
+import '@polymer/paper-icon-button/paper-icon-button.js';
+import '@polymer/paper-styles/color.js';
+import './paper-tabs-icons.js';
+import './paper-tab.js';
+import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
+import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import { IronMenuBehaviorImpl } from '@polymer/iron-menu-behavior/iron-menu-behavior.js';
+
 /**
 Material design: [Tabs](https://www.google.com/design/spec/components/tabs.html)
 
-`paper-tabs` makes it easy to explore and switch between different views or functional aspects of
-an app, or to browse categorized data sets.
+`paper-tabs` makes it easy to explore and switch between different views or
+functional aspects of an app, or to browse categorized data sets.
 
 Use `selected` property to get or set the selected tab.
 
@@ -40,7 +55,6 @@ between different views.
       <div>Page 2</div>
       <div>Page 3</div>
     </iron-pages>
-
 
 To use links in tabs, add `link` attribute to `paper-tab` and put an `<a>`
 element in `paper-tab` with a `tabindex` of -1.
@@ -80,28 +94,8 @@ Custom property | Description | Default
 `--paper-tabs-content` | Mixin applied to the content container of tabs | `{}`
 `--paper-tabs-container` | Mixin applied to the layout container of tabs | `{}`
 
-@hero hero.svg
 @demo demo/index.html
 */
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
-import '@polymer/polymer/polymer-legacy.js';
-
-import '@polymer/iron-flex-layout/iron-flex-layout.js';
-import '@polymer/iron-icon/iron-icon.js';
-import { IronMenubarBehavior } from '@polymer/iron-menu-behavior/iron-menubar-behavior.js';
-import { IronResizableBehavior } from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-styles/color.js';
-import './paper-tabs-icons.js';
-import './paper-tab.js';
-import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
-import { IronMenuBehaviorImpl } from '@polymer/iron-menu-behavior/iron-menu-behavior.js';
 Polymer({
   _template: html`
     <style>
