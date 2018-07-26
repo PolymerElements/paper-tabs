@@ -17,50 +17,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
-    <script src="../../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
-
-    <script type="module" src="../../iron-demo-helpers/demo-pages-shared-styles.js"></script>
-    <script type="module" src="../../iron-demo-helpers/demo-snippet.js"></script>
-    <script type="module" src="../../iron-flex-layout/iron-flex-layout.js"></script>
-    <script type="module" src="../../iron-pages/iron-pages.js"></script>
-    <script type="module" src="../../paper-styles/typography.js"></script>
-    <script type="module" src="../paper-tab.js"></script>
-    <script type="module" src="../paper-tabs.js"></script>
-
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
+    <script type="module">
+      import '@polymer/iron-demo-helpers/demo-pages-shared-styles.js';
+      import '@polymer/iron-demo-helpers/demo-snippet.js';
+      import '@polymer/iron-flex-layout/iron-flex-layout.js';
+      import '@polymer/iron-pages/iron-pages.js';
+      import '@polymer/paper-styles/typography.js';
+      import '../paper-tab.js';
+      import '../paper-tabs.js';
+    </script>
   </head>
   <body unresolved>
 
-    <!-- FIXME(polymer-modulizer):
-        These imperative modules that innerHTML your HTML are
-        a hacky way to be sure that any mixins in included style
-        modules are ready before any elements that reference them are
-        instantiated, otherwise the CSS @apply mixin polyfill won't be
-        able to expand the underlying CSS custom properties.
-        See: https://github.com/Polymer/polymer-modulizer/issues/154
-        -->
     <script type="module">
-const $_documentContainer = document.createElement('template');
+      import {html} from '@polymer/polymer/lib/utils/html-tag.js';
 
-$_documentContainer.innerHTML = `<custom-style>
-      <style is="custom-style" include="demo-pages-shared-styles">
-        #container {
-          max-width: 600px;
-        }
+      const template = html`
+        <custom-style>
+          <style is="custom-style" include="demo-pages-shared-styles">
+            #container {
+              max-width: 600px;
+            }
 
-        paper-tabs {
-          background-color: var(--paper-blue-900);
-          color: #fff;
-        }
-      </style>
-    </custom-style>`;
+            paper-tabs {
+              background-color: var(--paper-blue-900);
+              color: #fff;
+            }
+          </style>
+        </custom-style>
+      `;
+      document.body.appendChild(template.content);
+    </script>
 
-document.body.appendChild($_documentContainer.content);
-</script>
-
-    <script type="module">
-const $_documentContainer = document.createElement('template');
-
-$_documentContainer.innerHTML = `<div id="container" class="vertical-section-container centered">
+    <div id="container" class="vertical-section-container centered">
 
       <h3>Plain <code>paper-tabs</code>.</h3>
       <demo-snippet>
@@ -84,7 +74,7 @@ $_documentContainer.innerHTML = `<div id="container" class="vertical-section-con
             </style>
           </custom-style>
 
-          <paper-tabs id="plain-tabs" selected="0" no-bar="">
+          <paper-tabs id="plain-tabs" selected="0" no-bar>
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
@@ -98,7 +88,7 @@ $_documentContainer.innerHTML = `<div id="container" class="vertical-section-con
       </h3>
       <demo-snippet>
         <template>
-          <paper-tabs selected="0" no-slide="">
+          <paper-tabs selected="0" no-slide>
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
@@ -112,7 +102,7 @@ $_documentContainer.innerHTML = `<div id="container" class="vertical-section-con
       </h3>
       <demo-snippet>
         <template>
-          <paper-tabs selected="0" noink="">
+          <paper-tabs selected="0" noink>
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
@@ -127,7 +117,7 @@ $_documentContainer.innerHTML = `<div id="container" class="vertical-section-con
       </h3>
       <demo-snippet>
         <template>
-          <paper-tabs selected="0" scrollable="">
+          <paper-tabs selected="0" scrollable>
             <paper-tab>NUMBER ONE ITEM</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>THE THIRD ITEM</paper-tab>
@@ -150,13 +140,13 @@ $_documentContainer.innerHTML = `<div id="container" class="vertical-section-con
       </h3>
       <demo-snippet>
         <template>
-          <paper-tabs selected="0" scrollable="" fit-container="">
+          <paper-tabs selected="0" scrollable fit-container>
             <paper-tab>NUMBER ONE ITEM</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>THE THIRD ITEM</paper-tab>
           </paper-tabs>
           <br>
-          <paper-tabs selected="0" scrollable="" fit-container="" style="width: 50%;">
+          <paper-tabs selected="0" scrollable fit-container style="width: 50%;">
             <paper-tab>NUMBER ONE ITEM</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>THE THIRD ITEM</paper-tab>
@@ -176,7 +166,7 @@ $_documentContainer.innerHTML = `<div id="container" class="vertical-section-con
               <paper-tab>ITEM THREE</paper-tab>
             </paper-tabs>
             &nbsp;
-            <paper-tabs selected="0" scrollable="">
+            <paper-tabs selected="0" scrollable>
               <paper-tab>NUMBER ONE ITEM</paper-tab>
               <paper-tab>ITEM TWO</paper-tab>
               <paper-tab>THE THIRD ITEM</paper-tab>
@@ -201,7 +191,7 @@ $_documentContainer.innerHTML = `<div id="container" class="vertical-section-con
       </h3>
       <demo-snippet>
         <template>
-          <paper-tabs selected="0" align-bottom="">
+          <paper-tabs selected="0" align-bottom>
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
@@ -230,13 +220,13 @@ $_documentContainer.innerHTML = `<div id="container" class="vertical-section-con
           </custom-style>
 
           <paper-tabs selected="0">
-            <paper-tab link="">
+            <paper-tab link>
               <a href="#item1" tabindex="-1">ITEM ONE</a>
             </paper-tab>
-            <paper-tab link="">
+            <paper-tab link>
               <a href="#item2" tabindex="-1">ITEM TWO</a>
             </paper-tab>
-            <paper-tab link="">
+            <paper-tab link>
               <a href="#item3" tabindex="-1">ITEM THREE</a>
             </paper-tab>
           </paper-tabs>
@@ -248,7 +238,7 @@ $_documentContainer.innerHTML = `<div id="container" class="vertical-section-con
       </h3>
       <demo-snippet>
         <template>
-          <paper-tabs selected="0" autoselect="">
+          <paper-tabs selected="0" autoselect>
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
@@ -266,7 +256,7 @@ $_documentContainer.innerHTML = `<div id="container" class="vertical-section-con
           <h4>
             <code>autoselect-delay="0"</code>
           </h4>
-          <paper-tabs selected="0" no-slide="" autoselect="" autoselect-delay="0">
+          <paper-tabs selected="0" no-slide autoselect autoselect-delay="0">
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
@@ -275,7 +265,7 @@ $_documentContainer.innerHTML = `<div id="container" class="vertical-section-con
           <h4>
             <code>autoselect-delay="1000"</code>
           </h4>
-          <paper-tabs selected="0" autoselect="" autoselect-delay="1000">
+          <paper-tabs selected="0" autoselect autoselect-delay="1000">
             <paper-tab>ITEM ONE</paper-tab>
             <paper-tab>ITEM TWO</paper-tab>
             <paper-tab>ITEM THREE</paper-tab>
@@ -329,10 +319,7 @@ $_documentContainer.innerHTML = `<div id="container" class="vertical-section-con
       </demo-snippet>
       -->
 
-    </div>`;
-
-document.body.appendChild($_documentContainer.content);
-</script>
+    </div>
 
   </body>
 </html>
