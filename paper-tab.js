@@ -91,6 +91,8 @@ Polymer({
       :host(:focus) .tab-content {
         opacity: 1;
         font-weight: 700;
+
+        @apply --paper-tab-content-focused;
       }
 
       paper-ripple {
