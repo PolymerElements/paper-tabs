@@ -46,6 +46,7 @@ This element applies the mixin `--paper-font-common-base` but does not import
 element, make sure you've imported `paper-styles/typography.html`.
 */
 Polymer({
+  /** @override */
   _template: html`
     <style>
       :host {
@@ -131,6 +132,7 @@ Polymer({
 
   listeners: {down: '_updateNoink', tap: '_onTap'},
 
+  /** @override */
   attached: function() {
     this._updateNoink();
   },
