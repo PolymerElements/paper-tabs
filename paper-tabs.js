@@ -97,6 +97,7 @@ Custom property | Description | Default
 @demo demo/index.html
 */
 Polymer({
+  /** @override */
   _template: html`
     <style>
       :host {
@@ -317,6 +318,7 @@ Polymer({
    */
   keyBindings: {'left:keyup right:keyup': '_onArrowKeyup'},
 
+  /** @override */
   created: function() {
     this._holdJob = null;
     this._pendingActivationItem = undefined;
@@ -326,10 +328,12 @@ Polymer({
     this.addEventListener('blur', this._onBlurCapture.bind(this), true);
   },
 
+  /** @override */
   ready: function() {
     this.setScrollDirection('y', this.$.tabsContainer);
   },
 
+  /** @override */
   detached: function() {
     this._cancelPendingActivation();
   },
